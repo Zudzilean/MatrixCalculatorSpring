@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Matrix Calculation Result</title>
+    <style>
+        table, th, td {
+            border: 1px solid black;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 5px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+<h1>Matrix Calculation Result</h1>
+
+<div>
+    <h2>Result Matrix</h2>
+    <table>
+        <tr th:each="row : ${resultMatrix}"> <!-- 遍历每一行 -->
+            <td th:each="val : ${row}" th:text="${val}"> <!-- 遍历每一列 -->
+                <!-- Thymeleaf 会自动填充 val 的值 -->
+            </td>
+        </tr>
+    </table>
+</div>
+
+</body>
+</html>
