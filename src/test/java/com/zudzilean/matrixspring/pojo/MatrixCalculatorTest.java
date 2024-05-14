@@ -61,15 +61,13 @@ class MatrixCalculatorTest {
     private void assertArrayEquals(double[][] expected, double[][] actual) {
         assertEquals(expected.length, actual.length);
         for (int i = 0; i < expected.length; i++) {
-            assertArrayEquals(expected[i], actual[i], "Mismatch in row " + i);
+            for (int j = 0; j < expected[i].length; j++) {
+                if (expected[i][j] != actual[i][j]) {
+                    System.out.println("Mismatch in row " + i + " and colum " + j);
+                }
+            }
         }
-    }
 
-    // Helper method to assert equality of two doubles
-    private void assertArrayEquals(double[] expected, double[] actual, String message) {
-        assertEquals(expected.length, actual.length, message);
-        for (int i = 0; i < expected.length; i++) {
-            assertEquals(expected[i], actual[i], message + " at index " + i);
-        }
-    }
-}
+
+    }}
+

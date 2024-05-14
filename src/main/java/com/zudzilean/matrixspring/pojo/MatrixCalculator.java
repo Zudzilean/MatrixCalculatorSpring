@@ -24,6 +24,19 @@ public class MatrixCalculator {
         return add(matrixA, negate(matrixB));
     }
 
+    // 矩阵求负（辅助矩阵减法）
+    private static double[][] negate(double[][] matrix) {
+        int rows = matrix.length;
+        int cols = matrix[0].length;
+        double[][] negated = new double[rows][cols];
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < cols; j++) {
+                negated[i][j] = -matrix[i][j];
+            }
+        }
+        return negated;
+    }
+
     // 矩阵乘法
     public static double[][] multiply(double[][] matrixA, double[][] matrixB) {
         if (matrixA[0].length != matrixB.length) {
@@ -43,8 +56,8 @@ public class MatrixCalculator {
         return result;
     }
 
-    // 矩阵转置（用于后续实现矩阵乘法）
-    private static double[][] transpose(double[][] matrix) {
+    // 矩阵转置
+    public static double[][] transpose(double[][] matrix) {
         int rows = matrix.length;
         int cols = matrix[0].length;
         double[][] transposed = new double[cols][rows];
@@ -54,19 +67,6 @@ public class MatrixCalculator {
             }
         }
         return transposed;
-    }
-
-    // 矩阵求负
-    private static double[][] negate(double[][] matrix) {
-        int rows = matrix.length;
-        int cols = matrix[0].length;
-        double[][] negated = new double[rows][cols];
-        for (int i = 0; i < rows; i++) {
-            for (int j = 0; j < cols; j++) {
-                negated[i][j] = -matrix[i][j];
-            }
-        }
-        return negated;
     }
 
 
