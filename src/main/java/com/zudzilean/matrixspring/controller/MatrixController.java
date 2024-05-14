@@ -20,7 +20,10 @@ public class MatrixController {
     @PostMapping("/add")
     public Result add(@RequestBody MatrixInput input) {
         try {
+            MatrixCalculator.add(input.getMatrixA(), input.getMatrixB());
+
             double[][] result = matrixCalculator.add(input.getMatrixA(), input.getMatrixB());
+
             return new Result(true, "Addition successful", result);
         } catch (IllegalArgumentException e) {
             return new Result(false, e.getMessage(), null);
