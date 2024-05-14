@@ -1,5 +1,6 @@
 package com.zudzilean.matrixspring.service;
 
+import com.zudzilean.matrixspring.pojo.MatrixCalculator;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -42,10 +43,25 @@ class MatrixCalculatorV1ImplTest {
                 {2, 2},
                 {2, 2}
         };
+        assertArrayEquals(calculatorV1.subtract(matrixA, matrixB), expectedDifference);
     }
 
     @Test
     void multiply() {
+        double[][] matrixA = {
+                {1, 2},
+                {3, 4}
+        };
+        double[][] matrixB = {
+                {5, 6},
+                {7, 8}
+        };
+        double[][] expectedProduct = {
+                {19, 22},
+                {43, 50}
+        };
+        assertArrayEquals(expectedProduct, MatrixCalculator.multiply(matrixA, matrixB));
+
     }
 
     private void assertArrayEquals(double[][] expected, double[][] actual) {
