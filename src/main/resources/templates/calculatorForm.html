@@ -1,57 +1,20 @@
 <!DOCTYPE html>
-<html lang="en">
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8">
     <title>Matrix Calculator</title>
-    <script>
-        // 动态生成矩阵输入框的函数
-        function generateMatrixInput(matrixType) {
-            const size = document.getElementById('matrixSize').value;
-            const container = document.getElementById(matrixType + 'MatrixContainer');
-            container.innerHTML = ''; // 清空容器
-
-            for (let i = 0; i < size; i++) {
-                // 创建行输入框
-                const row = document.createElement('input');
-                row.type = 'text';
-                row.name = matrixType + 'Matrix[' + i + ']';
-                row.placeholder = 'Enter row ' + (i + 1) + ' values separated by space';
-
-                // 将行输入框添加到容器中
-                container.appendChild(row);
-                container.appendChild(document.createElement('br')); // 添加换行
-            }
-        }
-    </script>
 </head>
 <body>
-
-<h1>Matrix Calculator</h1>
-
-<!-- 矩阵大小选择 -->
-<label for="matrixSize">Enter matrix size (rows x columns):</label>
-<input type="text" id="matrixSize" name="matrixSize" placeholder="e.g., 2x3" oninput="generateMatrixInput('A')">
-<button onclick="generateMatrixInput('A')">Generate Matrix A</button>
-<button onclick="generateMatrixInput('B')">Generate Matrix B</button>
-
-<!-- 矩阵 A 输入 -->
-<h2>Matrix A</h2>
-<div id="AMatrixContainer"></div>
-
-<!-- 矩阵 B 输入 -->
-<h2>Matrix B</h2>
-<div id="BMatrixContainer"></div>
-
-<!-- 提交按钮 -->
-<button id="submitButton">Submit Calculation</button>
-
-<script>
-    // 页面加载时生成默认的矩阵输入框
-    window.onload = function() {
-        generateMatrixInput('A');
-        generateMatrixInput('B');
-    };
-</script>
-
+<h1>矩阵计算器:</h1>
+<form action="#" th:action="@{/calculate}" th:object="${calculator}" method="post">
+    <input type="number" th:field="*{numOne}"/>
+    <select th:field="*{operator}">
+        <option value="+">+</option>
+        <option value="-">-</option>
+        <option value="*">*</option>
+        <option value="/">/</option>
+    </select>
+    <input type="number" th:field="*{numTwo}"/>
+    <button type="submit">计算</button>
+</form>
 </body>
 </html>

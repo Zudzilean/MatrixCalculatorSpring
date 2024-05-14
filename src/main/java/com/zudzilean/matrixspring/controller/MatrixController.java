@@ -1,6 +1,7 @@
 package com.zudzilean.matrixspring.controller;
 
-import com.zudzilean.matrixspring.pojo.MatrixCalculator;
+import com.zudzilean.matrixspring.service.MatrixCalculatorV1;
+import com.zudzilean.matrixspring.service.MatrixCalculatorV1Impl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import lombok.Data;
@@ -9,20 +10,14 @@ import lombok.Data;
 @RequestMapping("/api/matrix")
 public class MatrixController {
 
-    private final MatrixCalculator matrixCalculator;
-
-    @Autowired
-    public MatrixController(MatrixCalculator matrixCalculator) {
-        this.matrixCalculator = matrixCalculator;
-    }
-
+    private MatrixCalculatorV1 calculatorV1 = new MatrixCalculatorV1Impl();
     // 接收矩阵加法请求
     @PostMapping("/add")
     public Result add(@RequestBody MatrixInput input) {
         try {
-            MatrixCalculator.add(input.getMatrixA(), input.getMatrixB());
+            calculatorV1.add(input.getMatrixA(), input.getMatrixB());
 
-            double[][] result = matrixCalculator.add(input.getMatrixA(), input.getMatrixB());
+            double[][] result = calculatorV1.add(input.getMatrixA(), input.getMatrixB());
 
             return new Result(true, "Addition successful", result);
         } catch (IllegalArgumentException e) {
@@ -34,7 +29,7 @@ public class MatrixController {
     @PostMapping("/subtract")
     public Result subtract(@RequestBody MatrixInput input) {
         try {
-            double[][] result = matrixCalculator.subtract(input.getMatrixA(), input.getMatrixB());
+            double[][] result = calculatorV1.subtract(input.getMatrixA(), input.getMatrixB());
             return new Result(true, "Subtraction successful", result);
         } catch (IllegalArgumentException e) {
             return new Result(false, e.getMessage(), null);
@@ -45,7 +40,7 @@ public class MatrixController {
     @PostMapping("/multiply")
     public Result multiply(@RequestBody MatrixInput input) {
         try {
-            double[][] result = matrixCalculator.multiply(input.getMatrixA(), input.getMatrixB());
+            double[][] result = calculatorV1.multiply(input.getMatrixA(), input.getMatrixB());
             return new Result(true, "Multiplication successful", result);
         } catch (IllegalArgumentException e) {
             return new Result(false, e.getMessage(), null);
