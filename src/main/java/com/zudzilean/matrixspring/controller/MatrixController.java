@@ -2,7 +2,6 @@ package com.zudzilean.matrixspring.controller;
 
 import com.zudzilean.matrixspring.service.MatrixCalculatorV1;
 import com.zudzilean.matrixspring.service.MatrixCalculatorV1Impl;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import lombok.Data;
 
