@@ -1,67 +1,68 @@
 package com.zudzilean.matrixspring.controller;
 
-import com.zudzilean.matrixspring.service.MatrixCalculatorV1;
+import com.zudzilean.matrixspring.service.MatrixInput;
 import com.zudzilean.matrixspring.service.MatrixCalculatorV1Impl;
-import org.springframework.web.bind.annotation.*;
 import lombok.Data;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/matrix")
 public class MatrixController {
 
-    private MatrixCalculatorV1 calculatorV1 = new MatrixCalculatorV1Impl();
-    // 接收矩阵加法请求
-    @PostMapping("/add")
-    public Result add(@RequestBody MatrixInput input) {
+    @PostMapping("/calculate")
+    public ResponseEntity<?> calculateMatrix(@RequestBody MatrixRequest request) {
         try {
-            calculatorV1.add(input.getMatrixA(), input.getMatrixB());
+            // 确定矩阵A和矩阵B的大小
+            int[] sizeA = MatrixInput.determineMatrixSize(request.getMatrixSizeA());
+            int[] sizeB = MatrixInput.determineMatrixSize(request.getMatrixSizeB());
 
-            double[][] result = calculatorV1.add(input.getMatrixA(), input.getMatrixB());
+            // 根据确定的大小构建矩阵A和矩阵B的数值
+            double[][] matrixA = MatrixInput.buildMatrixWithValues(request.getMatrixA(), sizeA);
+            double[][] matrixB = MatrixInput.buildMatrixWithValues(request.getMatrixB(), sizeB);
+            
 
-            return new Result(true, "Addition successful", result);
+            double[][] resultMatrix = null;
+            switch (request.getOperation()) {
+                case "add":
+                    resultMatrix = MatrixCalculatorV1Impl.add(matrixA, matrixB);
+                    break;
+                case "subtract":
+                    resultMatrix = MatrixCalculatorV1Impl.subtract(matrixA, matrixB);
+                    break;
+                case "multiply":
+                    resultMatrix = MatrixCalculatorV1Impl.multiply(matrixA, matrixB);
+                    break;
+                default:
+                    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Unsupported operation: " + request.getOperation());
+            }
+
+            // 将结果矩阵转换为 List of Lists 以返回 JSON 响应
+            List<List<Double>> result = convertMatrixToListOfLists(resultMatrix);
+
+            return ResponseEntity.ok(result);
         } catch (IllegalArgumentException e) {
-            return new Result(false, e.getMessage(), null);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
     }
 
-    // 接收矩阵减法请求
-    @PostMapping("/subtract")
-    public Result subtract(@RequestBody MatrixInput input) {
-        try {
-            double[][] result = calculatorV1.subtract(input.getMatrixA(), input.getMatrixB());
-            return new Result(true, "Subtraction successful", result);
-        } catch (IllegalArgumentException e) {
-            return new Result(false, e.getMessage(), null);
-        }
+    private List<List<Double>> convertMatrixToListOfLists(double[][] matrix) {
+        return java.util.Arrays.stream(matrix)
+                .map(row -> java.util.Arrays.stream(row).boxed().collect(Collectors.toList()))
+                .collect(Collectors.toList());
     }
 
-    // 接收矩阵乘法请求
-    @PostMapping("/multiply")
-    public Result multiply(@RequestBody MatrixInput input) {
-        try {
-            double[][] result = calculatorV1.multiply(input.getMatrixA(), input.getMatrixB());
-            return new Result(true, "Multiplication successful", result);
-        } catch (IllegalArgumentException e) {
-            return new Result(false, e.getMessage(), null);
-        }
-    }
-
+    // Lombok 注解来生成 getters, setters, toString 等
     @Data
-    public static class MatrixInput {
-        private double[][] matrixA;
-        private double[][] matrixB;
-    }
-
-    @Data
-    public static class Result {
-        private boolean success;
-        private String message;
-        private double[][] matrixResult;
-
-        public Result(boolean success, String message, double[][] matrixResult) {
-            this.success = success;
-            this.message = message;
-            this.matrixResult = matrixResult;
-        }
+    public static class MatrixRequest {
+        private String matrixSizeA; // 矩阵A的大小字符串，如 "【1,2】"
+        private String matrixA;      // 矩阵A的数值字符串，如 "【1,2】【3,4】"
+        private String matrixSizeB;  // 矩阵B的大小字符串，如 "【2,2】"
+        private String matrixB;      // 矩阵B的数值字符串，如 "【5,6】【7,8】"
+        private String operation;    // 操作，如 "add", "subtract" 或 "multiply"
     }
 }

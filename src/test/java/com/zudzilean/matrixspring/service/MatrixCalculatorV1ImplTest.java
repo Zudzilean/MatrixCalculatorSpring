@@ -6,8 +6,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class MatrixCalculatorV1ImplTest {
 
-    private MatrixCalculatorV1 calculatorV1 = new MatrixCalculatorV1Impl();
-
     @Test
     void add() {
         double[][] matrixA = {
@@ -25,7 +23,7 @@ class MatrixCalculatorV1ImplTest {
         // 静态方法和实例方法有什么区别，如何调用？
         // Java的多态和封装？
 
-        assertArrayEquals(calculatorV1.add(matrixA, matrixB), expectedSum);
+        assertArrayEquals(MatrixCalculatorV1Impl.add(matrixA, matrixB), expectedSum);
     }
 
     @Test
@@ -42,7 +40,7 @@ class MatrixCalculatorV1ImplTest {
                 {2, 2},
                 {2, 2}
         };
-        assertArrayEquals(calculatorV1.subtract(matrixA, matrixB), expectedDifference);
+        assertArrayEquals(MatrixCalculatorV1Impl.subtract(matrixA, matrixB), expectedDifference);
     }
 
     @Test
@@ -59,7 +57,7 @@ class MatrixCalculatorV1ImplTest {
                 {19, 22},
                 {43, 50}
         };
-        assertArrayEquals(expectedProduct, calculatorV1.multiply(matrixA, matrixB));
+        assertArrayEquals(expectedProduct, MatrixCalculatorV1Impl.multiply(matrixA, matrixB));
 
     }
 

@@ -12,7 +12,9 @@ public interface MatrixCalculatorV1 {
      * @param matrixB 二维数组
      * @return 二维数组
      */
-    double[][] add(double[][] matrixA, double[][] matrixB);
+    static double[][] add(double[][] matrixA, double[][] matrixB) {
+        return null;
+    }
 
     /**
      * 矩阵减法
@@ -21,7 +23,9 @@ public interface MatrixCalculatorV1 {
      * @param matrixB 二维数组
      * @return 二维数组
      */
-    double[][] subtract(double[][] matrixA, double[][] matrixB);
+    static double[][] subtract(double[][] matrixA, double[][] matrixB) {
+        return null;
+    }
 
     /**
      * 矩阵乘法
@@ -30,5 +34,7 @@ public interface MatrixCalculatorV1 {
      * @param matrixB 二维数组
      * @return 二维数组
      */
-    double[][] multiply(double[][] matrixA, double[][] matrixB);
+    static double[][] multiply(double[][] matrixA, double[][] matrixB) {
+        return null;
+    }
 }

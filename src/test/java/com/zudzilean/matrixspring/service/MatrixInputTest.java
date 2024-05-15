@@ -2,36 +2,61 @@ package com.zudzilean.matrixspring.service;
 
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
-import java.util.List;
-import java.util.ArrayList;
+import java.util.Arrays;
 
 public class MatrixInputTest {
 
     @Test
-    void buildMatrixValidInput() {
-        String input = "【1,2】【2,3】【4,5】【5,6】";
-        List<List<Long>> expectedMatrix = new ArrayList<>();
-        expectedMatrix.add(List.of(1L, 2L));
-        expectedMatrix.add(List.of(2L, 3L));
-        expectedMatrix.add(List.of(4L, 5L));
-        expectedMatrix.add(List.of(5L, 6L));
-
-        List<List<Long>> matrix = MatrixInput.buildMatrix(input);
-        assertNotNull(matrix, "The matrix should not be null.");
-        assertEquals(4, matrix.size(), "The matrix should have 4 rows.");
-
-        for (int i = 0; i < expectedMatrix.size(); i++) {
-            assertArrayEquals(expectedMatrix.get(i).stream().mapToLong(Long::longValue).toArray(),
-                    matrix.get(i).stream().mapToLong(Long::longValue).toArray(),
-                    "The row " + (i + 1) + " of the matrix is incorrect.");
-        }
+    void determineMatrixSizeValidInput() {
+        String input = "【1,2】";
+        int[] expectedSize = {1, 2};
+        int[] size = MatrixInput.determineMatrixSize(input);
+        assertArrayEquals(expectedSize, size, "The determined size of the matrix is incorrect.");
     }
 
     @Test
-    void buildMatrixInvalidInput() {
-        String input = "【1,2】【2,three】";
+    void determineMatrixSizeInvalidFormat() {
+        String input = "【1, 2, 3】";
         assertThrows(IllegalArgumentException.class, () -> {
-            MatrixInput.buildMatrix(input);
-        }, "buildMatrix should throw IllegalArgumentException for invalid input.");
+            MatrixInput.determineMatrixSize(input);
+        }, "determineMatrixSize should throw IllegalArgumentException for invalid format.");
+    }
+
+    @Test
+    void determineMatrixSizeEmptyInput() {
+        String input = "";
+        assertThrows(IllegalArgumentException.class, () -> {
+            MatrixInput.determineMatrixSize(input);
+        }, "determineMatrixSize should throw IllegalArgumentException for empty input.");
+    }
+
+    @Test
+    void buildMatrixWithValuesValidInput() {
+        String input = "【1,2】";
+        int[] size = {1, 2};
+        double[][] expectedMatrix = {{1.0, 2.0}};
+        double[][] matrix = MatrixInput.buildMatrixWithValues(input, size);
+
+        assertEquals(1, matrix.length, "The matrix should have 1 row.");
+        assertEquals(2, matrix[0].length, "The matrix should have 2 columns.");
+        assertArrayEquals(new double[]{1.0, 2.0}, matrix[0], "The first row of the matrix is incorrect.");
+    }
+
+    @Test
+    void buildMatrixWithValuesInvalidInput() {
+        String input = "【1,two】";
+        int[] size = {1, 2};
+        assertThrows(IllegalArgumentException.class, () -> {
+            MatrixInput.buildMatrixWithValues(input, size);
+        }, "buildMatrixWithValues should throw IllegalArgumentException for invalid input.");
+    }
+
+    @Test
+    void buildMatrixWithValuesNullInput() {
+        String input = null;
+        int[] size = {1, 2};
+        assertThrows(IllegalArgumentException.class, () -> {
+            MatrixInput.buildMatrixWithValues(input, size);
+        }, "buildMatrixWithValues should throw IllegalArgumentException for null input.");
     }
 }

@@ -1,20 +1,54 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
     <title>Matrix Calculator</title>
 </head>
 <body>
-<h1>矩阵计算器:</h1>
-<form action="#" th:action="@{/calculate}" th:object="${calculator}" method="post">
-    <input type="number" th:field="*{numOne}"/>
-    <select th:field="*{operator}">
-        <option value="+">+</option>
-        <option value="-">-</option>
-        <option value="*">*</option>
-        <option value="/">/</option>
-    </select>
-    <input type="number" th:field="*{numTwo}"/>
-    <button type="submit">计算</button>
+<h1>Matrix Calculator</h1>
+<form id="matrixForm" action="/api/matrix/calculate" method="post">
+    <label for="matrixSize">Matrix Size (rows x columns):</label>
+    <input type="text" id="matrixSize" name="matrixSize" required><br><br>
+
+    <label for="matrixA">Matrix A (comma-separated values):</label>
+    <textarea id="matrixA" name="matrixA" rows="10" cols="30" required></textarea><br><br>
+
+    <label for="matrixB">Matrix B (comma-separated values):</label>
+    <textarea id="matrixB" name="matrixB" rows="10" cols="30" required></textarea><br><br>
+
+    <label>Operation:</label>
+    <select name="operation" id="operation" required>
+        <option value="add">Add</option>
+        <option value="subtract">Subtract</option>
+        <option value="multiply">Multiply</option>
+    </select><br><br>
+
+    <input type="submit" value="Calculate">
 </form>
+
+<div id="result"></div>
+
+<script>
+    document.getElementById('matrixForm').onsubmit = function(event) {
+        event.preventDefault();
+        this.style.display = 'none'; // Hide the form after submission
+
+        var xhr = new XMLHttpRequest();
+        xhr.open('POST', this.action, true);
+        xhr.setRequestHeader('Content-Type', 'application/json');
+        xhr.onreadystatechange = function() {
+            if (xhr.readyState == 4 && xhr.status == 200) {
+                var resultDiv = document.getElementById('result');
+                resultDiv.textContent = 'Result: ' + JSON.stringify(JSON.parse(xhr.responseText), null, 2);
+            }
+        };
+        xhr.send(JSON.stringify({
+            matrixSize: document.getElementById('matrixSize').value,
+            matrixA: document.getElementById('matrixA').value,
+            matrixB: document.getElementById('matrixB').value,
+            operation: document.getElementById('operation').value
+        }));
+    };
+</script>
 </body>
 </html>

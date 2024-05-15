@@ -1,8 +1,8 @@
 package com.zudzilean.matrixspring.service;
 
 public class MatrixCalculatorV1Impl implements MatrixCalculatorV1 {
-    @Override
-    public double[][] add(double[][] matrixA, double[][] matrixB) {
+
+    public static double[][] add(double[][] matrixA, double[][] matrixB) {
         if (matrixA.length != matrixB.length || matrixA[0].length != matrixB[0].length) {
             throw new IllegalArgumentException("Matrices must be the same size for addition.");
         }
@@ -16,25 +16,23 @@ public class MatrixCalculatorV1Impl implements MatrixCalculatorV1 {
         return result;
     }
 
-    @Override
-    public double[][] subtract(double[][] matrixA, double[][] matrixB) {
-        return add(matrixA, negate(matrixB));
-    }
 
-    private double[][] negate(double[][] matrix) {
-        int rows = matrix.length;
-        int cols = matrix[0].length;
-        double[][] negated = new double[rows][cols];
-        for (int i = 0; i < rows; i++) {
-            for (int j = 0; j < cols; j++) {
-                negated[i][j] = -matrix[i][j];
+    public static double[][] subtract(double[][] matrixA, double[][] matrixB) {
+        if (matrixA.length != matrixB.length || matrixA[0].length != matrixB[0].length) {
+            throw new IllegalArgumentException("Matrices must be the same size for subtraction.");
+        }
+        int size = matrixA.length;
+        double[][] result = new double[size][size];
+        for (int i = 0; i < size; i++) {
+            for (int j = 0; j < size; j++) {
+                result[i][j] = matrixA[i][j] - matrixB[i][j];
             }
         }
-        return negated;
+        return result;
     }
 
-    @Override
-    public double[][] multiply(double[][] matrixA, double[][] matrixB) {
+
+    public static double[][] multiply(double[][] matrixA, double[][] matrixB) {
         if (matrixA[0].length != matrixB.length) {
             throw new IllegalArgumentException("The number of columns in the first matrix must equal the number of rows in the second for multiplication.");
         }
