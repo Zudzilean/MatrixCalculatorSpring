@@ -24,7 +24,7 @@ public class MatrixController {
             // 根据确定的大小构建矩阵A和矩阵B的数值
             double[][] matrixA = MatrixInput.buildMatrixWithValues(request.getMatrixA(), sizeA);
             double[][] matrixB = MatrixInput.buildMatrixWithValues(request.getMatrixB(), sizeB);
-            
+
 
             double[][] resultMatrix = null;
             switch (request.getOperation()) {
