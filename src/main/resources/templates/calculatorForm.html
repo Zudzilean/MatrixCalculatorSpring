@@ -5,50 +5,76 @@
     <title>Matrix Calculator</title>
 </head>
 <body>
-<h1>Matrix Calculator</h1>
-<form id="matrixForm" action="/api/matrix/calculate" method="post">
-    <label for="matrixSize">Matrix Size (rows x columns):</label>
-    <input type="text" id="matrixSize" name="matrixSize" required><br><br>
 
-    <label for="matrixA">Matrix A (comma-separated values):</label>
-    <textarea id="matrixA" name="matrixA" rows="10" cols="30" required></textarea><br><br>
+<h2>Matrix Calculator</h2>
 
-    <label for="matrixB">Matrix B (comma-separated values):</label>
-    <textarea id="matrixB" name="matrixB" rows="10" cols="30" required></textarea><br><br>
+<form id="matrixForm">
+    <label for="matrixSizeA">Matrix A Size: </label>
+    <input type="text" id="matrixSizeA" name="matrixSizeA" required><br><br>
 
-    <label>Operation:</label>
-    <select name="operation" id="operation" required>
+    <label for="matrixA">Matrix A Values: </label>
+    <input type="text" id="matrixA" name="matrixA" required><br><br>
+
+    <label for="matrixSizeB">Matrix B Size: </label>
+    <input type="text" id="matrixSizeB" name="matrixSizeB" required><br><br>
+
+    <label for="matrixB">Matrix B Values: </label>
+    <input type="text" id="matrixB" name="matrixB" required><br><br>
+
+    <label for="operation">Operation: </label>
+    <select id="operation" name="operation">
         <option value="add">Add</option>
         <option value="subtract">Subtract</option>
         <option value="multiply">Multiply</option>
     </select><br><br>
 
-    <input type="submit" value="Calculate">
+    <button type="submit">Calculate</button>
 </form>
 
 <div id="result"></div>
 
 <script>
-    document.getElementById('matrixForm').onsubmit = function(event) {
+    document.getElementById('matrixForm').addEventListener('submit', function(event) {
         event.preventDefault();
-        this.style.display = 'none'; // Hide the form after submission
 
-        var xhr = new XMLHttpRequest();
-        xhr.open('POST', this.action, true);
-        xhr.setRequestHeader('Content-Type', 'application/json');
-        xhr.onreadystatechange = function() {
-            if (xhr.readyState == 4 && xhr.status == 200) {
-                var resultDiv = document.getElementById('result');
-                resultDiv.textContent = 'Result: ' + JSON.stringify(JSON.parse(xhr.responseText), null, 2);
-            }
+        // 收集表单数据
+        var matrixSizeA = document.getElementById('matrixSizeA').value;
+        var matrixA = document.getElementById('matrixA').value;
+        var matrixSizeB = document.getElementById('matrixSizeB').value;
+        var matrixB = document.getElementById('matrixB').value;
+        var operation = document.getElementById('operation').value;
+
+        // 构建请求体数据
+        var requestData = {
+            matrixSizeA: matrixSizeA,
+            matrixA: matrixA,
+            matrixSizeB: matrixSizeB,
+            matrixB: matrixB,
+            operation: operation
         };
-        xhr.send(JSON.stringify({
-            matrixSize: document.getElementById('matrixSize').value,
-            matrixA: document.getElementById('matrixA').value,
-            matrixB: document.getElementById('matrixB').value,
-            operation: document.getElementById('operation').value
-        }));
-    };
+
+        // 发送POST请求到后端
+        fetch('/api/matrix/calculate', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(requestData) // 确保请求体是JSON字符串
+        })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok ' + response.statusText);
+                }
+                return response.json();
+            })
+            .then(data => {
+                document.getElementById('result').textContent = 'Result: ' + JSON.stringify(data, null, 2); // 格式化JSON输出
+            })
+            .catch(error => {
+                document.getElementById('result').textContent = 'Error: ' + error.message;
+            });
+    });
 </script>
+
 </body>
 </html>
