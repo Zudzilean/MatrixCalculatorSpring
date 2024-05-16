@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
 <head>
     <meta charset="UTF-8">
     <title>Matrix Calculator</title>
@@ -8,7 +8,9 @@
 
 <h2>Matrix Calculator</h2>
 
-<form id="matrixForm">
+<!-- 使用 Thymeleaf 的表单提交将使用POST方法 -->
+<form id="matrixForm" th:action="'/api/matrix/calculate'" th:method="'post'">
+    <!-- 表单输入字段 -->
     <label for="matrixSizeA">Matrix A Size: </label>
     <input type="text" id="matrixSizeA" name="matrixSizeA" required><br><br>
 
@@ -31,50 +33,51 @@
     <button type="submit">Calculate</button>
 </form>
 
-<div id="result"></div>
+<!-- 使用 Thymeleaf 的内联 JavaScript 来处理表单提交 -->
+<script th:inline="javascript">
+    /*<![CDATA[*/
+    document.addEventListener('DOMContentLoaded', function() {
+        var form = document.getElementById('matrixForm');
+        form.onsubmit = function(event) {
+            event.preventDefault();
 
-<script>
-    document.getElementById('matrixForm').addEventListener('submit', function(event) {
-        event.preventDefault();
+            // 构建请求体数据
+            var requestData = {
+                matrixSizeA: document.getElementById('matrixSizeA').value,
+                matrixA: document.getElementById('matrixA').value,
+                matrixSizeB: document.getElementById('matrixSizeB').value,
+                matrixB: document.getElementById('matrixB').value,
+                operation: document.getElementById('operation').value
+            };
 
-        // 收集表单数据
-        var matrixSizeA = document.getElementById('matrixSizeA').value;
-        var matrixA = document.getElementById('matrixA').value;
-        var matrixSizeB = document.getElementById('matrixSizeB').value;
-        var matrixB = document.getElementById('matrixB').value;
-        var operation = document.getElementById('operation').value;
-
-        // 构建请求体数据
-        var requestData = {
-            matrixSizeA: matrixSizeA,
-            matrixA: matrixA,
-            matrixSizeB: matrixSizeB,
-            matrixB: matrixB,
-            operation: operation
+            // 发送POST请求到后端
+            fetch('/api/matrix/calculate', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(requestData) // 确保请求体是JSON字符串
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok ' + response.statusText);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    // 显示结果
+                    document.getElementById('result').textContent = 'Result: ' + JSON.stringify(data, null, 2);
+                })
+                .catch(error => {
+                    document.getElementById('result').textContent = 'Error: ' + error.message;
+                });
         };
-
-        // 发送POST请求到后端
-        fetch('/api/matrix/calculate', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(requestData) // 确保请求体是JSON字符串
-        })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Network response was not ok ' + response.statusText);
-                }
-                return response.json();
-            })
-            .then(data => {
-                document.getElementById('result').textContent = 'Result: ' + JSON.stringify(data, null, 2); // 格式化JSON输出
-            })
-            .catch(error => {
-                document.getElementById('result').textContent = 'Error: ' + error.message;
-            });
     });
+    /*]]>*/
 </script>
+
+<!-- 用于显示计算结果 -->
+<div id="result" th:text="${result}"></div>
 
 </body>
 </html>

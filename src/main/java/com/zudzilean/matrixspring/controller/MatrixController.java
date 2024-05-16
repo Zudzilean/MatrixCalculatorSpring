@@ -1,7 +1,7 @@
 package com.zudzilean.matrixspring.controller;
 
-import com.zudzilean.matrixspring.service.MatrixInput;
 import com.zudzilean.matrixspring.service.MatrixCalculatorV1Impl;
+import com.zudzilean.matrixspring.service.MatrixInput;
 import lombok.Data;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,7 +14,8 @@ import java.util.stream.Collectors;
 @RequestMapping("/api/matrix")
 public class MatrixController {
 
-    @PostMapping("/calculate")
+
+    @RequestMapping(value = "/calculate", method = { RequestMethod.POST})
     public ResponseEntity<?> calculateMatrix(@RequestBody MatrixRequest request) {
         try {
             // 确定矩阵A和矩阵B的大小
