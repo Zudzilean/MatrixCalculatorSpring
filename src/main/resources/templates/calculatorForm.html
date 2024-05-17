@@ -1,57 +1,83 @@
 <!DOCTYPE html>
-<html lang="en">
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
 <head>
     <meta charset="UTF-8">
     <title>Matrix Calculator</title>
-    <script>
-        // 动态生成矩阵输入框的函数
-        function generateMatrixInput(matrixType) {
-            const size = document.getElementById('matrixSize').value;
-            const container = document.getElementById(matrixType + 'MatrixContainer');
-            container.innerHTML = ''; // 清空容器
-
-            for (let i = 0; i < size; i++) {
-                // 创建行输入框
-                const row = document.createElement('input');
-                row.type = 'text';
-                row.name = matrixType + 'Matrix[' + i + ']';
-                row.placeholder = 'Enter row ' + (i + 1) + ' values separated by space';
-
-                // 将行输入框添加到容器中
-                container.appendChild(row);
-                container.appendChild(document.createElement('br')); // 添加换行
-            }
-        }
-    </script>
 </head>
 <body>
 
-<h1>Matrix Calculator</h1>
+<h2>Matrix Calculator</h2>
 
-<!-- 矩阵大小选择 -->
-<label for="matrixSize">Enter matrix size (rows x columns):</label>
-<input type="text" id="matrixSize" name="matrixSize" placeholder="e.g., 2x3" oninput="generateMatrixInput('A')">
-<button onclick="generateMatrixInput('A')">Generate Matrix A</button>
-<button onclick="generateMatrixInput('B')">Generate Matrix B</button>
+<!-- 使用 Thymeleaf 的表单提交将使用POST方法 -->
+<form id="matrixForm" th:action="'/api/matrix/calculate'" th:method="'post'">
+    <!-- 表单输入字段 -->
+    <label for="matrixSizeA">Matrix A Size: </label>
+    <input type="text" id="matrixSizeA" name="matrixSizeA" required><br><br>
 
-<!-- 矩阵 A 输入 -->
-<h2>Matrix A</h2>
-<div id="AMatrixContainer"></div>
+    <label for="matrixA">Matrix A Values: </label>
+    <input type="text" id="matrixA" name="matrixA" required><br><br>
 
-<!-- 矩阵 B 输入 -->
-<h2>Matrix B</h2>
-<div id="BMatrixContainer"></div>
+    <label for="matrixSizeB">Matrix B Size: </label>
+    <input type="text" id="matrixSizeB" name="matrixSizeB" required><br><br>
 
-<!-- 提交按钮 -->
-<button id="submitButton">Submit Calculation</button>
+    <label for="matrixB">Matrix B Values: </label>
+    <input type="text" id="matrixB" name="matrixB" required><br><br>
 
-<script>
-    // 页面加载时生成默认的矩阵输入框
-    window.onload = function() {
-        generateMatrixInput('A');
-        generateMatrixInput('B');
-    };
+    <label for="operation">Operation: </label>
+    <select id="operation" name="operation">
+        <option value="add">Add</option>
+        <option value="subtract">Subtract</option>
+        <option value="multiply">Multiply</option>
+    </select><br><br>
+
+    <button type="submit">Calculate</button>
+</form>
+
+<!-- 使用 Thymeleaf 的内联 JavaScript 来处理表单提交 -->
+<script th:inline="javascript">
+    /*<![CDATA[*/
+    document.addEventListener('DOMContentLoaded', function() {
+        var form = document.getElementById('matrixForm');
+        form.onsubmit = function(event) {
+            event.preventDefault();
+
+            // 构建请求体数据
+            var requestData = {
+                matrixSizeA: document.getElementById('matrixSizeA').value,
+                matrixA: document.getElementById('matrixA').value,
+                matrixSizeB: document.getElementById('matrixSizeB').value,
+                matrixB: document.getElementById('matrixB').value,
+                operation: document.getElementById('operation').value
+            };
+
+            // 发送POST请求到后端
+            fetch('/api/matrix/calculate', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(requestData) // 确保请求体是JSON字符串
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok ' + response.statusText);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    // 显示结果
+                    document.getElementById('result').textContent = 'Result: ' + JSON.stringify(data, null, 2);
+                })
+                .catch(error => {
+                    document.getElementById('result').textContent = 'Error: ' + error.message;
+                });
+        };
+    });
+    /*]]>*/
 </script>
+
+<!-- 用于显示计算结果 -->
+<div id="result" th:text="${result}"></div>
 
 </body>
 </html>

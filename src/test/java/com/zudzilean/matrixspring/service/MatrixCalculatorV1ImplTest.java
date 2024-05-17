@@ -1,13 +1,13 @@
-package com.zudzilean.matrixspring.pojo;
+package com.zudzilean.matrixspring.service;
 
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-class MatrixCalculatorTest {
+class MatrixCalculatorV1ImplTest {
 
     @Test
-    public void testAdd() {
+    void add() {
         double[][] matrixA = {
                 {1, 2},
                 {3, 4}
@@ -20,11 +20,14 @@ class MatrixCalculatorTest {
                 {6, 8},
                 {10, 12}
         };
-        assertArrayEquals(expectedSum, MatrixCalculator.add(matrixA, matrixB));
+        // 静态方法和实例方法有什么区别，如何调用？
+        // Java的多态和封装？
+
+        assertArrayEquals(MatrixCalculatorV1Impl.add(matrixA, matrixB), expectedSum);
     }
 
     @Test
-    public void testSubtract() {
+    void subtract() {
         double[][] matrixA = {
                 {7, 8},
                 {9, 10}
@@ -37,11 +40,11 @@ class MatrixCalculatorTest {
                 {2, 2},
                 {2, 2}
         };
-        assertArrayEquals(expectedDifference, MatrixCalculator.subtract(matrixA, matrixB));
+        assertArrayEquals(MatrixCalculatorV1Impl.subtract(matrixA, matrixB), expectedDifference);
     }
 
     @Test
-    public void testMultiply() {
+    void multiply() {
         double[][] matrixA = {
                 {1, 2},
                 {3, 4}
@@ -54,20 +57,21 @@ class MatrixCalculatorTest {
                 {19, 22},
                 {43, 50}
         };
-        assertArrayEquals(expectedProduct, MatrixCalculator.multiply(matrixA, matrixB));
+        assertArrayEquals(expectedProduct, MatrixCalculatorV1Impl.multiply(matrixA, matrixB));
+
     }
 
-    // Helper method to assert array of arrays
     private void assertArrayEquals(double[][] expected, double[][] actual) {
         assertEquals(expected.length, actual.length);
         for (int i = 0; i < expected.length; i++) {
-            for (int j = 0; j < expected[i].length; j++) {
-                if (expected[i][j] != actual[i][j]) {
-                    System.out.println("Mismatch in row " + i + " and colum " + j);
-                }
-            }
+            assertArrayEquals(expected[i], actual[i], "Mismatch in row " + i);
         }
+    }
 
-
-    }}
-
+    private void assertArrayEquals(double[] expected, double[] actual, String message) {
+        assertEquals(expected.length, actual.length, message);
+        for (int i = 0; i < expected.length; i++) {
+            assertEquals(expected[i], actual[i], message + " at index " + i);
+        }
+    }
+}
