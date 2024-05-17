@@ -2,6 +2,9 @@ package com.zudzilean.matrixspring.service;
 
 public class MatrixCalculatorV1Impl implements MatrixCalculatorV1 {
 
+    //矩阵之间的计算
+
+    //加法
     public static double[][] add(double[][] matrixA, double[][] matrixB) {
         if (matrixA.length != matrixB.length || matrixA[0].length != matrixB[0].length) {
             throw new IllegalArgumentException("Matrices must be the same size for addition.");
@@ -17,6 +20,7 @@ public class MatrixCalculatorV1Impl implements MatrixCalculatorV1 {
     }
 
 
+    //减法
     public static double[][] subtract(double[][] matrixA, double[][] matrixB) {
         if (matrixA.length != matrixB.length || matrixA[0].length != matrixB[0].length) {
             throw new IllegalArgumentException("Matrices must be the same size for subtraction.");
@@ -32,6 +36,7 @@ public class MatrixCalculatorV1Impl implements MatrixCalculatorV1 {
     }
 
 
+    //乘法
     public static double[][] multiply(double[][] matrixA, double[][] matrixB) {
         if (matrixA[0].length != matrixB.length) {
             throw new IllegalArgumentException("The number of columns in the first matrix must equal the number of rows in the second for multiplication.");

@@ -1,7 +1,9 @@
 package com.zudzilean.matrixspring.service;
 
 public class MatrixInput {
-
+    //输入一个二维矩阵
+    //确认矩阵的大小
+    //确认矩阵的数值
     private static final int MAX_SIZE = 6;
     private static final long MAX_VALUE = 1000000;
 

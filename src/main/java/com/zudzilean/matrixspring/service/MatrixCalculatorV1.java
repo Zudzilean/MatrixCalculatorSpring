@@ -1,7 +1,7 @@
 package com.zudzilean.matrixspring.service;
 
 /**
- * 实现矩阵相关计算
+ * 实现矩阵之间的计算
  */
 public interface MatrixCalculatorV1 {
 
