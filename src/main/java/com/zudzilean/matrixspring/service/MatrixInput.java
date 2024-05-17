@@ -1,9 +1,9 @@
 package com.zudzilean.matrixspring.service;
 
 public class MatrixInput {
-    //输入一个二维矩阵
-    //确认矩阵的大小
-    //确认矩阵的数值
+    // 输出一个二维矩阵
+    // 确认矩阵的大小
+    // 确认矩阵的数值
     private static final int MAX_SIZE = 6;
     private static final long MAX_VALUE = 1000000;
 
@@ -20,11 +20,11 @@ public class MatrixInput {
         }
 
         // 去除输入字符串的方括号
-        String row = input.trim().replaceFirst("【", "").replaceFirst("】$", "");
+        String row = input.trim().replaceFirst("\\[", "").replaceFirst("\\]$", "");
 
-        // 确认输入格式正确，即【数字,数字】
+        // 确认输入格式正确，即[number,number]
         if (!row.matches("\\d+\\s*,\\s*\\d+")) {
-            throw new IllegalArgumentException("Input must be in the format of 【number,number】.");
+            throw new IllegalArgumentException("Input must be in the format of [number,number].");
         }
 
         // 获取该行的元素
@@ -69,7 +69,7 @@ public class MatrixInput {
         double[][] matrix = new double[rowCount][colCount];
 
         // 去除输入字符串两端的方括号并分割矩阵行
-        String[] rows = input.trim().replaceFirst("【", "").replaceFirst("】$", "").split("\\】\\s*【");
+        String[] rows = input.trim().replaceFirst("\\[", "").replaceFirst("\\]$", "").split("\\]\\s*\\[");
 
         // 验证输入的行数是否与确定的矩阵大小一致
         if (rows.length != rowCount) {
