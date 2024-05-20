@@ -85,40 +85,8 @@ public class MatrixCalculatorV2lmpl implements MatrixCalculatorV2{
             }
 
         }
-
-
-        // 完成高斯消元后，检查解的类型
-        checkAndPrintSolutionType(matrix);
+        
         return matrix;
-    }
-
-    private void checkAndPrintSolutionType(double[][] matrix) {
-        int rows = matrix.length;
-        int cols = matrix[0].length;
-        int pivotRows = cols; // 假设方阵情况，即行数等于列数
-
-        // 检查是否有全零行
-        boolean hasZeroRow = false;
-        for (int i = 0; i < rows; i++) {
-            if (isRowAllZeros(matrix, i)) {
-                hasZeroRow = true;
-                break;
-            }
-        }
-
-        // 检查最后一行
-        boolean lastRowHasZeroPivot = isRowAllZeros(matrix, rows - 1) && matrix[rows - 1][cols - 1] == 0;
-
-        if (lastRowHasZeroPivot) {
-            // 如果最后一行是全零行，但右下角的元素不是零，则无解
-            System.out.println("The system has no solution.");
-        } else if (hasZeroRow) {
-            // 如果存在全零行，则无限解
-            System.out.println("The system has infinitely many solutions.");
-        } else {
-            // 如果没有全零行，则唯一解
-            System.out.println("The system has a unique solution.");
-        }
     }
 
     private boolean isRowAllZeros(double[][] matrix, int rowIndex) {
@@ -206,36 +174,6 @@ public class MatrixCalculatorV2lmpl implements MatrixCalculatorV2{
             }
         }
         return ans;
-    }
-
-    @Override
-    public Complex[] eigenvalues(double[][] matrix) {
-        return new Complex[0];
-    }
-
-    @Override
-    public Pair<Complex[], double[][]> eigenvectors(double[][] matrix) {
-        return null;
-    }
-
-    @Override
-    public int rank(double[][] matrix) {
-        return 0;
-    }
-
-    @Override
-    public LUDecompositionResult luDecompose(double[][] matrix) {
-        return null;
-    }
-
-    @Override
-    public QRDecompositionResult qrDecompose(double[][] matrix) {
-        return null;
-    }
-
-    @Override
-    public double[] solveLinearSystem(double[][] a, double[] b) {
-        return new double[0];
     }
 
 }
