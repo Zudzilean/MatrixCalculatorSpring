@@ -145,6 +145,17 @@ public class MatrixCalculatorV2lmpl implements MatrixCalculatorV2{
 
     }
 
+    //计算二维矩阵的转换
+    public double[][] transpose(double[][] matrix) {
+        int m = matrix.length, n = matrix[0].length;
+        double[][] ans = new double[n][m];
+        for (int i = 0; i < m; ++i) {
+            for (int j = 0; j < n; ++j) {
+                ans[j][i] = matrix[i][j];
+            }
+        }
+        return ans;
+    }
 
     // 计算矩阵的行列式
     public double determinant(double[][] matrix) {
@@ -163,11 +174,12 @@ public class MatrixCalculatorV2lmpl implements MatrixCalculatorV2{
                 return matrix[0][0] * matrix[1][1] - matrix[0][1] * matrix[1][0];
             }
 
+
             // 对于大于2x2的矩阵，使用递归的拉普拉斯展开
             return laplacianExpansion(matrix);
     }
 
-        // 拉普拉斯展开递归方法
+    // 拉普拉斯展开递归方法
     private double laplacianExpansion(double[][] matrix) {
         double det = 0;
         double[][] subMatrix;
@@ -193,16 +205,6 @@ public class MatrixCalculatorV2lmpl implements MatrixCalculatorV2{
         return null;
     }
 
-    //计算二维矩阵的转换
-    public double[][] transpose(double[][] matrix) {
-        int m = matrix.length, n = matrix[0].length;
-        double[][] ans = new double[n][m];
-        for (int i = 0; i < m; ++i) {
-            for (int j = 0; j < n; ++j) {
-                ans[j][i] = matrix[i][j];
-            }
-        }
-        return ans;
-    }
+
 
 }
