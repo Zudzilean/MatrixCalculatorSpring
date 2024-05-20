@@ -23,8 +23,8 @@ class MatrixCalculatorV2lmplTest {
 
             // 如果没有异常，检查结果
             double[][] expectedMatrix = {
-                    {1, 1, 1},
-                    {0, 1, 1},
+                    {1, 0, 0},
+                    {0, 1, 0},
                     {0, 0, 1}
             };
 
