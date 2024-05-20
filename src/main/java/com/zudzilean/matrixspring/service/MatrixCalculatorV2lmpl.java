@@ -85,17 +85,8 @@ public class MatrixCalculatorV2lmpl implements MatrixCalculatorV2{
             }
 
         }
-        
-        return matrix;
-    }
 
-    private boolean isRowAllZeros(double[][] matrix, int rowIndex) {
-        for (int j = 0; j < matrix[rowIndex].length; j++) {
-            if (matrix[rowIndex][j] != 0) {
-                return false;
-            }
-        }
-        return true;
+        return matrix;
     }
 
     private void printMatrix(double[][] matrix) {
@@ -154,9 +145,47 @@ public class MatrixCalculatorV2lmpl implements MatrixCalculatorV2{
 
     }
 
-    //计算二维矩阵的det行列式值
+
+    // 计算矩阵的行列式
     public double determinant(double[][] matrix) {
-        return 0;
+            int n = matrix.length;
+            if (n == 0 || n != matrix[0].length) {
+                throw new IllegalArgumentException("Matrix must be non-empty and square.");
+            }
+
+            // 对于1x1矩阵，行列式就是矩阵中唯一的元素
+            if (n == 1) {
+                return matrix[0][0];
+            }
+
+            // 对于2x2矩阵，使用ad - bc公式计算行列式
+            if (n == 2) {
+                return matrix[0][0] * matrix[1][1] - matrix[0][1] * matrix[1][0];
+            }
+
+            // 对于大于2x2的矩阵，使用递归的拉普拉斯展开
+            return laplacianExpansion(matrix);
+    }
+
+        // 拉普拉斯展开递归方法
+    private double laplacianExpansion(double[][] matrix) {
+        double det = 0;
+        double[][] subMatrix;
+        for (int i = 0; i < matrix.length; i++) {
+            // 创建子矩阵，排除第0行和第i列
+            subMatrix = new double[matrix.length - 1][];
+            for (int j = 1; j < matrix.length; j++) {
+                subMatrix[j - 1] = new double[matrix[j].length - 1];
+                for (int k = 0, col = 0; k < matrix[j].length; k++) {
+                    if (k != i) {
+                        subMatrix[j - 1][col++] = matrix[j][k];
+                    }
+                }
+            }
+            // 递归计算子矩阵的行列式，并累加结果
+            det += Math.pow(-1, i) * matrix[0][i] * determinant(subMatrix);
+        }
+        return det;
     }
 
     //计算二维矩阵的inverse逆矩阵

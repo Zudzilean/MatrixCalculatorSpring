@@ -5,11 +5,11 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
 class MatrixCalculatorV2lmplTest {
+    // 确保这是实现类的名称
+    MatrixCalculatorV2 calculator = new MatrixCalculatorV2lmpl();
 
     @Test
     void simplifyMatrix() {
-        MatrixCalculatorV2 calculator = new MatrixCalculatorV2lmpl(); // 确保这是实现类的名称
-
         // 定义一个测试矩阵
         double[][] testMatrix = {
                 {1, 1, 1},
@@ -74,5 +74,56 @@ class MatrixCalculatorV2lmplTest {
         for (int i = 0; i < expectedTranspose.length; i++) {
             Assertions.assertArrayEquals(expectedTranspose[i], transposedMatrix[i], "Row " + i + " does not match.");
         }
+    }
+
+
+    @Test
+    void testDeterminant1x1() {
+
+        double[][] matrix1x1 = {{5}};
+        double expected1x1 = 5;
+        double actual1x1 = calculator.determinant(matrix1x1);
+        assertEquals(expected1x1, actual1x1, "1x1 matrix determinant should be the single element.");
+    }
+
+    @Test
+    void testDeterminant2x2() {
+
+        double[][] matrix2x2 = {{1, 2}, {3, 4}};
+        double expected2x2 = (1 * 4) - (2 * 3); // 2x2 matrix determinant calculation
+        double actual2x2 = calculator.determinant(matrix2x2);
+        assertEquals(expected2x2, actual2x2, "2x2 matrix determinant calculation is incorrect.");
+    }
+
+    @Test
+    void testDeterminant3x3() {
+
+        double[][] matrix3x3 = {{1, 2, 3}, {0, 1, 4}, {5, 6, 0}};
+        double expected3x3 = (1 * (1 * 0 - 4 * 6) - 2 * (0 * 0 - 4 * 5) + 3 * (0 * 6 - 1 * 5));
+        double actual3x3 = calculator.determinant(matrix3x3);
+        assertEquals(expected3x3, actual3x3, "3x3 matrix determinant calculation is incorrect.");
+    }
+
+    @Test
+    void testDeterminantNonSquareMatrix() {
+
+        double[][] nonSquareMatrix = {{1, 2, 3}, {4, 5, 6}};
+        assertThrows(IllegalArgumentException.class, () -> {
+            calculator.determinant(nonSquareMatrix);
+        }, "Determinant calculation should throw an exception for non-square matrices.");
+    }
+
+    @Test
+    void testDeterminantEmptyMatrix() {
+
+        double[][] emptyMatrix = {};
+        assertThrows(IllegalArgumentException.class, () -> {
+            calculator.determinant(emptyMatrix);
+        }, "Determinant calculation should throw an exception for empty matrices.");
+    }
+
+
+    @Test
+    void inverse() {
     }
 }
