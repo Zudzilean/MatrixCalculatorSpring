@@ -27,7 +27,7 @@ public class MatrixCalculatorV2lmpl implements MatrixCalculatorV2{
             // 交换行，将非零行移动到当前处理的行,设为主行
             if(nonZeroRowIndex!=row) {
                 swapRows(matrix, nonZeroRowIndex, row);
-                printStep("Swapped row " + nonZeroRowIndex + " with row " + row);
+                printStep("Swapped row " + nonZeroRowIndex + " with row " + (row+1));
                 printMatrix(matrix);
 
             }
@@ -35,7 +35,7 @@ public class MatrixCalculatorV2lmpl implements MatrixCalculatorV2{
             double factor = matrix[nonZeroRowIndex][col];
             if(factor != 1) {
                 multiplyRowByConstant(matrix, row, 1 / factor);
-                printStep("Multiplied row " + row + " by " + (1 / factor));
+                printStep("Multiplied row " + (row+1) + " by " + (1 / factor));
                 printMatrix(matrix);
             }
 
@@ -46,12 +46,12 @@ public class MatrixCalculatorV2lmpl implements MatrixCalculatorV2{
                     double multiplier = 1/matrix[i][col]  ;
                     // 归一
                     if(multiplier != 1) {
-                        printStep("Multiplied row " + i + " by " + multiplier);
+                        printStep("Multiplied row " + (i+1) + " by " + multiplier);
                         multiplyRowByConstant(matrix, i, multiplier);
                         printMatrix(matrix);
                     }
                     // 减去当前行的倍数以置零
-                    printStep("Subtracted row " + i + " with row " + row);
+                    printStep("Subtracted row " + (i+1) + " with row " + (row+1));
                     subtractRows(matrix, i, row);
                     printMatrix(matrix);
                 }
@@ -60,41 +60,32 @@ public class MatrixCalculatorV2lmpl implements MatrixCalculatorV2{
             row++; // 移动到下一行继续处理
         }
 
-     /*   // 打印当前状态
-        System.out.println("New matrix state:");
-        printMatrix(matrix);
+        // 上三角继续简化
+        for (row = rows-1; row>=0; row--) {
 
-        for (int col = cols-1; 0 <= col && 0 <= row; col--) {
-
-            // 找到当前列第一个非零元素的行索引
-            int[] result = findLastNonZero(matrix, col, row, rows);
-            int nonZeroRowIndex = result[0];
-            if (nonZeroRowIndex == -1) {
+            // 找到当前行第一个非零元素的行索列
+            int nonZeroColIndex = findLastNonZero(matrix, row);
+            if (nonZeroColIndex == -1) {
                 continue; // 如果整列都是零，则跳过
             }
 
             // 将当前列上面的所有行的对应元素置为0
-            for (int i = nonZeroRowIndex-1; i >= 0; i--) {
-                if(matrix[i][col] != 0) {
+            for (int i = 0; i<row;i++) {
+                if(matrix[i][nonZeroColIndex] != 0) {
                     // 计算倍数所需的倍数
-                    double multiplier = matrix[i][col]  ;
-                    // 归一
-                    if(multiplier != 1) {
-                        printStep("Multiplied row " + i + " by " + multiplier);
-                        multiplyRowByConstant(matrix, i, multiplier);
-                        printMatrix(matrix);
+                    double multiplier = matrix[i][nonZeroColIndex]/matrix[row][nonZeroColIndex];  ;
+                    // 倍数相减
+                    printStep("Subtracted row " + (i+1) + " with row " + (row+1) +
+                                " multiplied row " + (i+1) + " by " + multiplier);
+                    for (int k = nonZeroColIndex; k < cols; k++) {
+                            matrix[i][k] -= matrix[row][k] * multiplier;
                     }
-                    // 减去当前行的倍数以置零
-                    printStep("Subtracted row " + i + " with row " + row);
-                    subtractRows(matrix, i, row);
                     printMatrix(matrix);
                 }
             }
 
-            row--; // 移动到下一行继续处理
         }
 
-      */
 
         // 完成高斯消元后，检查解的类型
         checkAndPrintSolutionType(matrix);
@@ -182,13 +173,17 @@ public class MatrixCalculatorV2lmpl implements MatrixCalculatorV2{
         return new int[]{-1, -1}; // 如果没有找到非零元素
     }
 
-    private int[] findLastNonZero(double[][] matrix, int col, int startRow, int endRow) {
-        for (int i = endRow; startRow<=i; i--) {
-            if (matrix[i][col] != 0) {
-                return new int[]{i, col}; // 返回非零元素所在的行和列索引
+    private int findLastNonZero(double[][] matrix, int row) {
+        int col = matrix[row].length;
+        for (int i=row; i>=0; i--) {
+            for(int j=0; j<col; j++) {
+                if (matrix[i][j] != 0) {
+                    return i;
+                }
             }
         }
-        return new int[]{-1, -1}; // 如果没有找到非零元素
+        return -1;
+
     }
 
     //计算二维矩阵的det行列式值
