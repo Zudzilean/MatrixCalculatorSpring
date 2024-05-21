@@ -1,8 +1,5 @@
 package com.zudzilean.matrixspring.service;
 
-import java.util.ArrayList;
-import java.util.List;
-
 //矩阵内部的计算
 public class MatrixCalculatorV2lmpl implements MatrixCalculatorV2{
     //二维矩阵化简并打印过程
@@ -202,7 +199,29 @@ public class MatrixCalculatorV2lmpl implements MatrixCalculatorV2{
 
     //计算二维矩阵的inverse逆矩阵
     public double[][] inverse(double[][] matrix) throws Exception {
-        return null;
+        int n = matrix.length;
+
+        // 创建增广矩阵，左边是原矩阵，右边是单位矩阵
+        double[][] augmentedMatrix = new double[n][2 * n];
+        for (int i = 0; i < n; i++) {
+            System.arraycopy(matrix[i], 0, augmentedMatrix[i], 0, n);
+            for (int j = n; j < 2 * n; j++) {
+                augmentedMatrix[i][j] = (i == (j - n)) ? 1 : 0;
+            }
+        }
+
+        // 对增广矩阵进行高斯消元
+        simplifyMatrix(augmentedMatrix);
+
+        // 从增广矩阵中提取逆矩阵
+        double[][] inverseMatrix = new double[n][n];
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                inverseMatrix[i][j] = augmentedMatrix[i][j + n];
+            }
+        }
+
+        return inverseMatrix;
     }
 
 

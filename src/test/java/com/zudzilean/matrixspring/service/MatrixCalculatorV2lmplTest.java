@@ -6,7 +6,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class MatrixCalculatorV2lmplTest {
     // 确保这是实现类的名称
-    MatrixCalculatorV2 calculator = new MatrixCalculatorV2lmpl();
+    private MatrixCalculatorV2 calculator = new MatrixCalculatorV2lmpl();
 
     @Test
     void simplifyMatrix() {
@@ -125,5 +125,28 @@ class MatrixCalculatorV2lmplTest {
 
     @Test
     void inverse() {
+        // 测试逆矩阵计算是否正确
+        double[][] matrix = {
+                {1, 2, 4},
+                {4, 6, 8},
+                {8, 10, 12}
+        };
+        double[][] expectedInverse = {
+                {1, -2, 1},
+                {-2,  2.5,  -1},
+                {1,  -0.75,   0.25}
+        };
+
+        try {
+            double[][] actualInverse = calculator.inverse(matrix);
+            for (int i = 0; i < matrix.length; i++) {
+                for (int j = 0; j < matrix.length; j++) {
+                    assertEquals(expectedInverse[i][j], actualInverse[i][j], 0.000001,
+                            "Inverse matrix element at [" + i + "][" + j + "] is incorrect.");
+                }
+            }
+        } catch (Exception e) {
+            fail("Exception was thrown during inverse matrix calculation: " + e.getMessage());
+        }
     }
 }

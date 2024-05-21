@@ -1,6 +1,8 @@
 package com.zudzilean.matrixspring.controller;
 
 import com.zudzilean.matrixspring.service.MatrixCalculatorV1Impl;
+import com.zudzilean.matrixspring.service.MatrixCalculatorV2;
+import com.zudzilean.matrixspring.service.MatrixCalculatorV2lmpl;
 import com.zudzilean.matrixspring.service.MatrixInput;
 import lombok.Data;
 import org.springframework.http.HttpStatus;
@@ -13,6 +15,7 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/api/matrix")
 public class MatrixController {
+    private MatrixCalculatorV2 calculatorV2lmpl = new MatrixCalculatorV2lmpl();
 
     @RequestMapping(value = "/calculate", method = { RequestMethod.POST })
     public ResponseEntity<?> calculateMatrix(@RequestBody MatrixRequest request) {
