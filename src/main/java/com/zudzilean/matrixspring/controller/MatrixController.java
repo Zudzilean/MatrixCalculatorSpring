@@ -1,9 +1,6 @@
 package com.zudzilean.matrixspring.controller;
 
-import com.zudzilean.matrixspring.service.MatrixCalculatorV1;
-import com.zudzilean.matrixspring.service.MatrixCalculatorV2;
-import com.zudzilean.matrixspring.service.MatrixCalculatorV2lmpl;
-import com.zudzilean.matrixspring.service.MatrixInput;
+import com.zudzilean.matrixspring.service.*;
 import lombok.Data;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,7 +19,8 @@ import java.util.stream.Collectors;
 public class MatrixController {
 
     private MatrixInput matrixInput = new MatrixInput();
-    private MatrixCalculatorV2 calculatorV2  = new MatrixCalculatorV2lmpl(); // 确保MatrixCalculatorV2lmpl是正确的实现类
+    private MatrixCalculatorV1 calculatorV1 = new MatrixCalculatorV1Impl();
+    private MatrixCalculatorV2 calculatorV2 = new MatrixCalculatorV2lmpl(); // 确保MatrixCalculatorV2lmpl是正确的实现类
 
 
     @Data
@@ -47,11 +45,11 @@ public class MatrixController {
             // 根据操作类型执行不同的矩阵运算
             switch (request.getOperation()) {
                 case "add":
-                    return ResponseEntity.ok(convertMatrixToListOfLists(MatrixCalculatorV1.add(matrixA, matrixB)));
+                    return ResponseEntity.ok(convertMatrixToListOfLists(calculatorV1.add(matrixA, matrixB)));
                 case "subtract":
-                    return ResponseEntity.ok(convertMatrixToListOfLists(MatrixCalculatorV1.subtract(matrixA, matrixB)));
+                    return ResponseEntity.ok(convertMatrixToListOfLists(calculatorV1.subtract(matrixA, matrixB)));
                 case "multiply":
-                    return ResponseEntity.ok(convertMatrixToListOfLists(MatrixCalculatorV1.multiply(matrixA, matrixB)));
+                    return ResponseEntity.ok(convertMatrixToListOfLists(calculatorV1.multiply(matrixA, matrixB)));
                 case "simplify":
                     return ResponseEntity.ok(convertMatrixToListOfLists(calculatorV2.simplifyMatrix(matrixA)));
                 case "determinant":
