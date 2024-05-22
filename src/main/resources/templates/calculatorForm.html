@@ -89,7 +89,6 @@
     }
 
 
-
     function showMatrixValueForm(event) {
         event.preventDefault(); // 阻止表单提交
         const operation = document.getElementById('operation').value;
@@ -129,48 +128,64 @@
         document.getElementById('step3').classList.remove('hidden');
     }
 
+    function collectMatrixValues(matrixPrefix) {
+        const size = document.getElementById(matrixPrefix + 'Size').value.split(',').map(Number);
+        const matrix = [];
+
+        for (let row = 0; row < size[0]; row++) {
+            let rowArray = [];
+            for (let col = 0; col < size[1]; col++) {
+                // 注意这里的 ID 应该与 showMatrixValueForm 函数中创建的 ID 相匹配
+                const inputId = `matrix${matrixPrefix}_${row}-${col}`;
+                const inputValue = document.getElementById(inputId).value;
+                rowArray.push(parseFloat(inputValue));
+            }
+            matrix.push(rowArray);
+        }
+        return matrix;
+    }
+
     function submitMatrixCalculation(event) {
         event.preventDefault();
         const operation = document.getElementById('operationValue').value;
         const sizeA = document.getElementById('ASize').value.split(',').map(Number);
-        let matrixA = [];
-        let matrixB = [];
-
-        for (let i = 0; i < sizeA[0]; i++) {
-            matrixA.push(document.getElementById(`matrixA${i}`).value.split(',').map(Number));
-        }
-        if (["add", "subtract", "multiply"].includes(operation)) {
-            const sizeB = document.getElementById('BSize').value.split(',').map(Number);
-            for (let i = 0; i < sizeB[0]; i++) {
-                matrixB.push(document.getElementById(`matrixB${i}`).value.split(',').map(Number));
-            }
-        }
-
-        // Construct the data to be sent to the server
-        const data = {
+        const matrixA = collectMatrixValues('A');
+        let data = {
             operation: operation,
             sizeA: sizeA,
-            matrixA: matrixA,
-            sizeB: operation !== 'simplify' && operation !== 'determinant' && operation !== 'inverse' && operation !== 'transpose' ? document.getElementById('BSize').value.split(',').map(Number) : null,
-            matrixB: operation !== 'simplify' && operation !== 'determinant' && operation !== 'inverse' && operation !== 'transpose' ? matrixB : null
+            matrixA: matrixA
         };
 
-        // Send the data to the server using XMLHttpRequest
+        // 如果需要矩阵B
+        if (["add", "subtract", "multiply"].includes(operation)) {
+            const sizeB = document.getElementById('BSize').value.split(',').map(Number);
+            const matrixB = collectMatrixValues('B');
+            data.sizeB = sizeB;
+            data.matrixB = matrixB;
+        }
+
+        // 发送数据到后端
         const xhr = new XMLHttpRequest();
         xhr.open('POST', '/api/matrix/calculate');
-        xhr.setRequestHeader('Content-Type', 'application/json');
+        xhr.setRequestHeader('Content-Type', 'application/json;charset=UTF-8');
         xhr.onreadystatechange = function () {
-            if (xhr.readyState === 4 && xhr.status === 200) {
-                const resultElement = document.getElementById('result');
-                resultElement.classList.remove('hidden');
-                resultElement.textContent = 'Result: ' + xhr.responseText;
-            } else if (xhr.readyState === 4 && xhr.status !== 200) {
-                const resultElement = document.getElementById('result');
-                resultElement.classList.remove('hidden');
-                resultElement.textContent = 'Error: ' + xhr.statusText;
+            if (xhr.readyState === XMLHttpRequest.DONE) {
+                if (xhr.status === 200) {
+                    try {
+                        const result = JSON.parse(xhr.responseText);
+                        document.getElementById('result').classList.remove('hidden');
+                        document.getElementById('result').textContent = 'Result: ' + JSON.stringify(result, null, 2);
+                    } catch (error) {
+                        document.getElementById('result').classList.remove('hidden');
+                        document.getElementById('result').textContent = 'Error parsing response: ' + error;
+                    }
+                } else {
+                    document.getElementById('result').classList.remove('hidden');
+                    document.getElementById('result').textContent = 'Error: ' + xhr.statusText;
+                }
             }
-        };
-        xhr.send(JSON.stringify(data));
+            xhr.send(JSON.stringify(data));
+        }
     }
 </script>
 
