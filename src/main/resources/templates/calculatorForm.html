@@ -114,7 +114,9 @@
                 matrixInputHtml += `<div>Row ${row + 1}: `;
                 for (let col = 0; col < cols; col++) {
                     const inputName = `matrix${'A' + (matrixIndex === 1 ? 'B' : '')}[${row}][${col}]`;
-                    matrixInputHtml += `<input type="text" name="${inputName}" placeholder="0.0" required> `;
+                    console.log(inputName);
+                    let matrixPrefix = row === 0 ? 'A':'B';
+                    matrixInputHtml += `<input type="text" id="matrix${matrixPrefix}_${row}-${col}" name="${inputName}" placeholder="0.0" required> `;
                 }
                 matrixInputHtml += `</div>`; // Close Row div
             }
@@ -137,10 +139,12 @@
             for (let col = 0; col < size[1]; col++) {
                 // 注意这里的 ID 应该与 showMatrixValueForm 函数中创建的 ID 相匹配
                 const inputId = `matrix${matrixPrefix}_${row}-${col}`;
-                const inputValue = document.getElementById(inputId).value;
+                debugger;
+                const inputValue = document.getElementById(inputId)?.value;
                 rowArray.push(parseFloat(inputValue));
+                matrix.push(rowArray);
             }
-            matrix.push(rowArray);
+
         }
         return matrix;
     }
@@ -164,28 +168,26 @@
             data.matrixB = matrixB;
         }
 
-        // 发送数据到后端
         const xhr = new XMLHttpRequest();
-        xhr.open('POST', '/api/matrix/calculate');
-        xhr.setRequestHeader('Content-Type', 'application/json;charset=UTF-8');
+        xhr.open('POST', 'http://localhost:8080/api/matrix/calculate', true);
+        // 发送数据到后端
         xhr.onreadystatechange = function () {
             if (xhr.readyState === XMLHttpRequest.DONE) {
                 if (xhr.status === 200) {
-                    try {
-                        const result = JSON.parse(xhr.responseText);
-                        document.getElementById('result').classList.remove('hidden');
-                        document.getElementById('result').textContent = 'Result: ' + JSON.stringify(result, null, 2);
-                    } catch (error) {
-                        document.getElementById('result').classList.remove('hidden');
-                        document.getElementById('result').textContent = 'Error parsing response: ' + error;
-                    }
+                    document.getElementById('result').classList.remove('hidden');
+                    document.getElementById('result').textContent = 'Result: ' + xhr.responseText;
                 } else {
                     document.getElementById('result').classList.remove('hidden');
                     document.getElementById('result').textContent = 'Error: ' + xhr.statusText;
                 }
             }
-            xhr.send(JSON.stringify(data));
-        }
+        };
+        xhr.onerror = function () {
+            // 这里处理网络错误
+            document.getElementById('result').classList.remove('hidden');
+            document.getElementById('result').textContent = 'Network Error';
+        };
+        xhr.send(JSON.stringify(data));
     }
 </script>
 
