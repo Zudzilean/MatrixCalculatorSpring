@@ -1,83 +1,178 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <title>Matrix Calculator</title>
+    </thymeleaf:fragment>
+    <style>
+        .hidden {
+            display: none;
+        }
+    </style>
 </head>
 <body>
 
 <h2>Matrix Calculator</h2>
 
-<!-- 使用 Thymeleaf 的表单提交将使用POST方法 -->
-<form id="matrixForm" th:action="'/api/matrix/calculate'" th:method="'post'">
-    <!-- 表单输入字段 -->
-    <label for="matrixSizeA">Matrix A Size: </label>
-    <input type="text" id="matrixSizeA" name="matrixSizeA" required><br><br>
-
-    <label for="matrixA">Matrix A Values: </label>
-    <input type="text" id="matrixA" name="matrixA" required><br><br>
-
-    <label for="matrixSizeB">Matrix B Size: </label>
-    <input type="text" id="matrixSizeB" name="matrixSizeB" required><br><br>
-
-    <label for="matrixB">Matrix B Values: </label>
-    <input type="text" id="matrixB" name="matrixB" required><br><br>
-
+<!-- 初始表单：选择操作类型 -->
+<div id="step1">
     <label for="operation">Operation: </label>
-    <select id="operation" name="operation">
+    <select id="operation" name="operation" onchange="showMatrixSizeForm()">
+        <option value="">Select Operation</option>
         <option value="add">Add</option>
         <option value="subtract">Subtract</option>
         <option value="multiply">Multiply</option>
-    </select><br><br>
+        <option value="simplify">Simplify</option>
+        <option value="determinant">Determinant</option>
+        <option value="inverse">Inverse</option>
+        <option value="transpose">Transpose</option>
+    </select>
+    <button onclick="restart()">Restart</button>
+</div>
 
-    <button type="submit">Calculate</button>
-</form>
+<!-- 第二步表单：输入矩阵大小 -->
+<div id="step2" class="hidden">
+    <form id="matrixSizeForm" onsubmit="showMatrixValueForm(event)">
+        <input type="hidden" id="operationValue" name="operationValue">
+        <!-- 矩阵大小输入将根据操作动态添加 -->
+        <div id="matrixSizeInputs"></div>
+        <button type="submit">Next</button>
+        <button onclick="restart()">Restart</button>
+    </form>
+</div>
 
-<!-- 使用 Thymeleaf 的内联 JavaScript 来处理表单提交 -->
-<script th:inline="javascript">
-    /*<![CDATA[*/
-    document.addEventListener('DOMContentLoaded', function() {
-        var form = document.getElementById('matrixForm');
-        form.onsubmit = function(event) {
-            event.preventDefault();
+<!-- 第三步表单：输入矩阵值 -->
+<div id="step3" class="hidden">
+    <form id="matrixValueForm" onsubmit="submitMatrixCalculation(event)">
+        <div id="matrixValueInputs"></div>
+        <button type="submit">Calculate</button>
+        <button onclick="restart()">Restart</button>
+    </form>
+</div>
 
-            // 构建请求体数据
-            var requestData = {
-                matrixSizeA: document.getElementById('matrixSizeA').value,
-                matrixA: document.getElementById('matrixA').value,
-                matrixSizeB: document.getElementById('matrixSizeB').value,
-                matrixB: document.getElementById('matrixB').value,
-                operation: document.getElementById('operation').value
-            };
+<!-- 结果显示 -->
+<div id="result" class="hidden"></div>
 
-            // 发送POST请求到后端
-            fetch('/api/matrix/calculate', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(requestData) // 确保请求体是JSON字符串
-            })
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error('Network response was not ok ' + response.statusText);
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    // 显示结果
-                    document.getElementById('result').textContent = 'Result: ' + JSON.stringify(data, null, 2);
-                })
-                .catch(error => {
-                    document.getElementById('result').textContent = 'Error: ' + error.message;
-                });
+<script>
+    let operation = '';
+
+    function restart() {
+        if (confirm('Are you sure you want to start over?')) {
+            location.reload();
+        }
+    }
+
+    function showMatrixSizeForm() {
+        const operationElement = document.getElementById('operation');
+        operation = operationElement.value;
+        document.getElementById('operationValue').value = operation;
+        const sizeInputsElement = document.getElementById('matrixSizeInputs');
+        sizeInputsElement.innerHTML = ''; // Clear previous size inputs
+
+        document.getElementById('step1').classList.add('hidden');
+        document.getElementById('step2').classList.remove('hidden');
+
+        if (["add", "subtract", "multiply"].includes(operation)) {
+            addMatrixSizeInput('A');
+            addMatrixSizeInput('B');
+        } else {
+            addMatrixSizeInput('A');
+        }
+    }
+
+    function addMatrixSizeInput(prefix) {
+        const sizeInputsElement = document.getElementById('matrixSizeInputs');
+        sizeInputsElement.innerHTML += `
+        <label for="${prefix}Size">Matrix ${prefix} Size (rows,cols): </label>
+        <input type="text" id="${prefix}Size" name="${prefix}Size" placeholder="e.g., 2,3" required><br><br>
+        `;
+    }
+
+
+
+    function showMatrixValueForm(event) {
+        event.preventDefault(); // 阻止表单提交
+        const operation = document.getElementById('operation').value;
+        const sizeInputs = document.getElementById('matrixSizeInputs');
+        const valueInputsElement = document.getElementById('matrixValueInputs');
+        valueInputsElement.innerHTML = ''; // 清空之前的输入框
+
+        // 根据操作类型确定需要显示的矩阵数量
+        let matrixCount = 1;
+        if (["add", "subtract", "multiply"].includes(operation)) {
+            matrixCount = 2;
+        }
+
+        // 循环创建每个矩阵的输入框
+        for (let matrixIndex = 0; matrixIndex < matrixCount; matrixIndex++) {
+            const sizeId = matrixIndex === 0 ? 'ASize' : 'BSize';
+            const matrixValues = document.getElementById(sizeId).value.split(',').map(Number);
+            const rows = matrixValues[0];
+            const cols = matrixValues[1];
+            let matrixInputHtml = `<div><label>Matrix ${'A' + (matrixIndex === 1 ? 'B' : '')}:</label><br>`;
+
+            for (let row = 0; row < rows; row++) {
+                matrixInputHtml += `<div>Row ${row + 1}: `;
+                for (let col = 0; col < cols; col++) {
+                    const inputName = `matrix${'A' + (matrixIndex === 1 ? 'B' : '')}[${row}][${col}]`;
+                    matrixInputHtml += `<input type="text" name="${inputName}" placeholder="0.0" required> `;
+                }
+                matrixInputHtml += `</div>`; // Close Row div
+            }
+
+            matrixInputHtml += `</div>`; // Close Matrix div
+            valueInputsElement.innerHTML += matrixInputHtml;
+        }
+
+        // 显示第三步表单，并隐藏第二步表单
+        document.getElementById('step2').classList.add('hidden');
+        document.getElementById('step3').classList.remove('hidden');
+    }
+
+    function submitMatrixCalculation(event) {
+        event.preventDefault();
+        const operation = document.getElementById('operationValue').value;
+        const sizeA = document.getElementById('ASize').value.split(',').map(Number);
+        let matrixA = [];
+        let matrixB = [];
+
+        for (let i = 0; i < sizeA[0]; i++) {
+            matrixA.push(document.getElementById(`matrixA${i}`).value.split(',').map(Number));
+        }
+        if (["add", "subtract", "multiply"].includes(operation)) {
+            const sizeB = document.getElementById('BSize').value.split(',').map(Number);
+            for (let i = 0; i < sizeB[0]; i++) {
+                matrixB.push(document.getElementById(`matrixB${i}`).value.split(',').map(Number));
+            }
+        }
+
+        // Construct the data to be sent to the server
+        const data = {
+            operation: operation,
+            sizeA: sizeA,
+            matrixA: matrixA,
+            sizeB: operation !== 'simplify' && operation !== 'determinant' && operation !== 'inverse' && operation !== 'transpose' ? document.getElementById('BSize').value.split(',').map(Number) : null,
+            matrixB: operation !== 'simplify' && operation !== 'determinant' && operation !== 'inverse' && operation !== 'transpose' ? matrixB : null
         };
-    });
-    /*]]>*/
-</script>
 
-<!-- 用于显示计算结果 -->
-<div id="result" th:text="${result}"></div>
+        // Send the data to the server using XMLHttpRequest
+        const xhr = new XMLHttpRequest();
+        xhr.open('POST', '/api/matrix/calculate');
+        xhr.setRequestHeader('Content-Type', 'application/json');
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState === 4 && xhr.status === 200) {
+                const resultElement = document.getElementById('result');
+                resultElement.classList.remove('hidden');
+                resultElement.textContent = 'Result: ' + xhr.responseText;
+            } else if (xhr.readyState === 4 && xhr.status !== 200) {
+                const resultElement = document.getElementById('result');
+                resultElement.classList.remove('hidden');
+                resultElement.textContent = 'Error: ' + xhr.statusText;
+            }
+        };
+        xhr.send(JSON.stringify(data));
+    }
+</script>
 
 </body>
 </html>

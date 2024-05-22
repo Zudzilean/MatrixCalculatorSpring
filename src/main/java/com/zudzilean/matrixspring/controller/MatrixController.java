@@ -20,8 +20,6 @@ public class MatrixController {
 
     private MatrixInput matrixInput = new MatrixInput();
     private MatrixCalculatorV1 calculatorV1 = new MatrixCalculatorV1Impl();
-    private MatrixCalculatorV2 calculatorV2 = new MatrixCalculatorV2lmpl(); // 确保MatrixCalculatorV2lmpl是正确的实现类
-
 
     @Data
     public static class MatrixRequest {
@@ -42,7 +40,7 @@ public class MatrixController {
                     ? matrixInput.validateMatrix(request.getMatrixB(), request.getSizeB())
                     : null;
 
-            // 根据操作类型执行不同的矩阵运算
+            // 根据操作类型执行不同的矩阵运算7
             switch (request.getOperation()) {
                 case "add":
                     return ResponseEntity.ok(convertMatrixToListOfLists(calculatorV1.add(matrixA, matrixB)));
@@ -51,18 +49,18 @@ public class MatrixController {
                 case "multiply":
                     return ResponseEntity.ok(convertMatrixToListOfLists(calculatorV1.multiply(matrixA, matrixB)));
                 case "simplify":
-                    return ResponseEntity.ok(convertMatrixToListOfLists(calculatorV2.simplifyMatrix(matrixA)));
+                    return ResponseEntity.ok(convertMatrixToListOfLists(calculatorV1.simplifyMatrix(matrixA)));
                 case "determinant":
-                    double det = calculatorV2.determinant(matrixA);
+                    double det = calculatorV1.determinant(matrixA);
                     return ResponseEntity.ok(Map.of("determinant", det));
                 case "inverse":
-                    double[][] inverseMatrix = calculatorV2.inverse(matrixA);
+                    double[][] inverseMatrix = calculatorV1.inverse(matrixA);
                     if (inverseMatrix == null) {
                         throw new IllegalArgumentException("Matrix inverse is null");
                     }
                     return ResponseEntity.ok(convertMatrixToListOfLists(inverseMatrix));
                 case "transpose":
-                    return ResponseEntity.ok(convertMatrixToListOfLists(calculatorV2.transpose(matrixA)));
+                    return ResponseEntity.ok(convertMatrixToListOfLists(calculatorV1.transpose(matrixA)));
                 default:
                     throw new IllegalArgumentException("Unsupported operation: " + request.getOperation());
             }
