@@ -120,7 +120,6 @@
         `;
     }
 
-
     function showMatrixValueForm(event) {
         event.preventDefault(); // 阻止表单提交
 
@@ -191,47 +190,50 @@
         const operation = document.getElementById('operationValue').value;
         const sizeA = document.getElementById('ASize').value.split(',').map(Number);
         const matrixA = collectMatrixValues('A');
-        let data = {
+        let requestData = {
             operation: operation,
             sizeA: sizeA,
             matrixA: matrixA
         };
 
-        // 如果需要矩阵B
-        if (["add", "subtract", "multiply"].includes(operation)) {
+        // 如果操作需要矩阵B
+        const operationsNeedingMatrixB = ["add", "subtract", "multiply"];
+        if (operationsNeedingMatrixB.includes(operation)) {
             const sizeB = document.getElementById('BSize').value.split(',').map(Number);
             const matrixB = collectMatrixValues('B');
-            data.sizeB = sizeB;
-            data.matrixB = matrixB;
+            requestData.sizeB = sizeB;
+            requestData.matrixB = matrixB;
         }
 
         const xhr = new XMLHttpRequest();
-        xhr.open('POST', 'http://127.0.0.1:8080/api/matrix/calculate', true); // 第三个参数true表示异步请求
+        xhr.open('POST', '/api/matrix/calculate', true); // 简化了URL
 
-        // 设置请求头
         xhr.setRequestHeader('Content-Type', 'application/json');
-        // 发送数据到后端
         xhr.onreadystatechange = function () {
             if (xhr.readyState === XMLHttpRequest.DONE) {
+                const resultElement = document.getElementById('result');
                 if (xhr.status === 200) {
-                    document.getElementById('result').classList.remove('hidden');
-                    // 假设返回的响应是一个JSON数组格式的矩阵
-                    const resultMatrix = JSON.parse(xhr.responseText);
-                    displayMatrixAsTable(resultMatrix);
+                    resultElement.classList.remove('hidden');
+                    try {
+                        const response = JSON.parse(xhr.responseText);
+                        handleMatrixCalculationResponse(operation, response);
+                    } catch (error) {
+                        console.error('Parsing error:', error);
+                        resultElement.textContent = 'Error: Invalid JSON response.';
+                    }
                 } else {
-                    document.getElementById('result').classList.remove('hidden');
-                    document.getElementById('result').textContent = 'Error: ' + xhr.statusText;
+                    resultElement.classList.remove('hidden');
+                    resultElement.textContent = `Error: ${xhr.statusText}`;
                 }
             }
         };
         xhr.onerror = function () {
-            // 这里处理网络错误
-            document.getElementById('result').classList.remove('hidden');
-            document.getElementById('result').textContent = 'Network Error';
+            const resultElement = document.getElementById('result');
+            resultElement.classList.remove('hidden');
+            resultElement.textContent = 'Network Error';
         };
-        xhr.send(JSON.stringify(data));
+        xhr.send(JSON.stringify(requestData));
     }
-
 
     function displayMatrixAsTable(matrix) {
         const resultElement = document.getElementById('result');
@@ -240,9 +242,9 @@
         const table = document.createElement('table');
         table.className = 'matrix-table';
 
-        matrix.forEach(row => {
+        matrix.forEach((row, rowIndex) => {
             const tr = document.createElement('tr'); // 创建行
-            row.forEach(value => {
+            row.forEach((value, colIndex) => {
                 const td = document.createElement('td'); // 创建单元格
                 td.textContent = value.toFixed(1); // 设置单元格内容并保留一位小数
                 tr.appendChild(td); // 将单元格添加到行中
@@ -252,6 +254,27 @@
 
         resultElement.appendChild(table); // 将表格添加到结果元素中
     }
+
+    function displayDeterminantResult(detValue) {
+        const resultElement = document.getElementById('result');
+        const parsedResult = parseFloat(detValue);
+
+        if (!isNaN(parsedResult)) {
+            resultElement.textContent = `Determinant: ${parsedResult.toFixed(2)}`;
+        } else {
+            resultElement.textContent = 'Error: Invalid determinant value.';
+        }
+    }
+
+    // 新函数，用于处理不同的响应类型
+    function handleMatrixCalculationResponse(operation, response) {
+        if (operation === "determinant") {
+            displayDeterminantResult(response.determinant);
+        } else {
+            displayMatrixAsTable(response);
+        }
+    }
+
 </script>
 
 </body>

@@ -31,7 +31,7 @@ public interface MatrixCalculatorV1 {
      */
      double[][] multiply(double[][] matrixA, double[][] matrixB) ;
 
-    //二维矩阵化简并打印过程
+    //二维矩阵化简并打印过程 // TODO: 注释调整
     double[][] simplifyMatrix(double[][] matrix);
 
     //计算二维矩阵的det

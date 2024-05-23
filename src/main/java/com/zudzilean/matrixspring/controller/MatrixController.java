@@ -1,7 +1,9 @@
 package com.zudzilean.matrixspring.controller;
 
-import com.zudzilean.matrixspring.service.*;
-import lombok.Data;
+import com.zudzilean.matrixspring.domain.MatrixRequest;
+import com.zudzilean.matrixspring.service.MatrixCalculatorV1;
+import com.zudzilean.matrixspring.util.MatrixInputUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -13,33 +15,30 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-
+/**
+ *
+ */
 @RestController
 @RequestMapping("/api/matrix")
 public class MatrixController {
 
-    private MatrixInput matrixInput = new MatrixInput();
-    private MatrixCalculatorV1 calculatorV1 = new MatrixCalculatorV1Impl();
 
-    @Data
-    public static class MatrixRequest {
-        private int[] sizeA;
-        private double[][] matrixA;
-        private int[] sizeB;
-        private double[][] matrixB;
-        private String operation;
+    private MatrixCalculatorV1 calculatorV1;
+
+    @Autowired
+    public void setCalculatorV1(MatrixCalculatorV1 calculatorV1) {
+        this.calculatorV1 = calculatorV1;
     }
 
     @PostMapping("/calculate")
     public ResponseEntity<?> calculateMatrix(@RequestBody MatrixRequest request) {
         try {
             // 验证矩阵A及其大小
-            double[][] matrixA = matrixInput.validateMatrix(request.getMatrixA(), request.getSizeA());
+            double[][] matrixA = MatrixInputUtils.validateMatrix(request.getMatrixA(), request.getSizeA());
             // 确认计算方式后，验证矩阵B及其大小
-            double[][] matrixB = ("add".equals(request.getOperation()) || "subtract".equals(request.getOperation()))
-                    ? matrixInput.validateMatrix(request.getMatrixB(), request.getSizeB())
-                    : null;
+            double[][] matrixB = ("add".equals(request.getOperation()) || "subtract".equals(request.getOperation())) ? MatrixInputUtils.validateMatrix(request.getMatrixB(), request.getSizeB()) : null;
 
+            // TODO 根据Operation获取到计算结果 策略模式
             // 根据操作类型执行不同的矩阵运算7
             switch (request.getOperation()) {
                 case "add":
@@ -64,6 +63,8 @@ public class MatrixController {
                 default:
                     throw new IllegalArgumentException("Unsupported operation: " + request.getOperation());
             }
+
+            // return ResponseEntity.ok(根据Operation获取到计算结果 策略模式)
         } catch (IllegalArgumentException e) {
             // 记录日志
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
@@ -75,8 +76,6 @@ public class MatrixController {
 
 
     private List<List<Double>> convertMatrixToListOfLists(double[][] matrix) {
-        return java.util.Arrays.stream(matrix)
-                .map(row -> java.util.Arrays.stream(row).boxed().collect(Collectors.toList()))
-                .collect(Collectors.toList());
+        return java.util.Arrays.stream(matrix).map(row -> java.util.Arrays.stream(row).boxed().collect(Collectors.toList())).collect(Collectors.toList());
     }
 }

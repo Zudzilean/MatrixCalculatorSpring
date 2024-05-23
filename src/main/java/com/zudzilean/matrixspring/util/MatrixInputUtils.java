@@ -1,12 +1,12 @@
-package com.zudzilean.matrixspring.service;
+package com.zudzilean.matrixspring.util;
 
-public class MatrixInput {
+public class MatrixInputUtils {
 
     private static final int MAX_SIZE = 10;
     private static final long MAX_VALUE = 1000000;
 
 
-    public double[][] validateMatrix(double[][] matrix, int[] size) throws IllegalArgumentException {
+    public static double[][] validateMatrix(double[][] matrix, int[] size) throws IllegalArgumentException {
         // 检查 size 数组是否为 null 或长度不为 2
         if (size == null || size.length != 2) {
             throw new IllegalArgumentException("Size array must not be null and must have exactly two elements.");

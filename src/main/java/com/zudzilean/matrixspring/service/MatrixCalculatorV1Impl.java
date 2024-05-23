@@ -1,5 +1,10 @@
 package com.zudzilean.matrixspring.service;
+
+import org.springframework.stereotype.Service;
+
 //矩阵之间的计算
+// TODO:类注释 方法注释调整
+@Service
 public class MatrixCalculatorV1Impl implements MatrixCalculatorV1 {
 
     //加法
