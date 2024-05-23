@@ -1,9 +1,8 @@
 <!DOCTYPE html>
-<html lang="en">
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
 <head>
     <meta charset="UTF-8">
     <title>Matrix Calculator</title>
-    </thymeleaf:fragment>
     <style>
         .hidden {
             display: none;
@@ -113,10 +112,11 @@
             for (let row = 0; row < rows; row++) {
                 matrixInputHtml += `<div>Row ${row + 1}: `;
                 for (let col = 0; col < cols; col++) {
-                    const inputName = `matrix${'A' + (matrixIndex === 1 ? 'B' : '')}[${row}][${col}]`;
-                    console.log(inputName);
-                    let matrixPrefix = row === 0 ? 'A':'B';
-                    matrixInputHtml += `<input type="text" id="matrix${matrixPrefix}_${row}-${col}" name="${inputName}" placeholder="0.0" required> `;
+                    // 现在我们使用 matrixIndex 来确定前缀，并构建 input 的 id 和 name
+                    const matrixPrefix = matrixIndex === 0 ? 'A' : 'B';
+                    const inputId = `matrix${matrixPrefix}_${row}-${col}`;
+                    const inputName = `matrix${matrixPrefix}[${row}][${col}]`;
+                    matrixInputHtml += `<input type="text" id="${inputId}" name="${inputName}" placeholder="0.0" required> `;
                 }
                 matrixInputHtml += `</div>`; // Close Row div
             }
@@ -137,15 +137,21 @@
         for (let row = 0; row < size[0]; row++) {
             let rowArray = [];
             for (let col = 0; col < size[1]; col++) {
-                // 注意这里的 ID 应该与 showMatrixValueForm 函数中创建的 ID 相匹配
                 const inputId = `matrix${matrixPrefix}_${row}-${col}`;
-                debugger;
-                const inputValue = document.getElementById(inputId)?.value;
-                rowArray.push(parseFloat(inputValue));
-                matrix.push(rowArray);
-            }
+                const inputElement = document.getElementById(inputId);
+                let inputValue = inputElement ? inputElement.value : ''; // 默认为空字符串
 
+                // 检查输入值是否为空或无效
+                if (inputValue === '' || isNaN(inputValue)) {
+                    console.error(`输入值无效或为空：${inputId}`);
+                    rowArray.push(0); // 或者其他默认值
+                } else {
+                    rowArray.push(parseFloat(inputValue));
+                }
+            }
+            matrix.push(rowArray);
         }
+
         return matrix;
     }
 
@@ -169,7 +175,10 @@
         }
 
         const xhr = new XMLHttpRequest();
-        xhr.open('POST', 'http://localhost:8080/api/matrix/calculate', true);
+        xhr.open('POST', 'http://127.0.0.1:8080/api/matrix/calculate', true); // 第三个参数true表示异步请求
+
+        // 设置请求头
+        xhr.setRequestHeader('Content-Type', 'application/json');
         // 发送数据到后端
         xhr.onreadystatechange = function () {
             if (xhr.readyState === XMLHttpRequest.DONE) {
