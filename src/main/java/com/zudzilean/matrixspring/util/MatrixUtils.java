@@ -1,6 +1,12 @@
 package com.zudzilean.matrixspring.util;
 
-public class MatrixInputUtils {
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+
+import java.util.List;
+import java.util.stream.Collectors;
+
+public class MatrixUtils {
 
     private static final int MAX_SIZE = 10;
     private static final long MAX_VALUE = 1000000;
@@ -63,6 +69,28 @@ public class MatrixInputUtils {
 
         // 如果所有检查都通过，则返回矩阵
         return matrix;
+    }
+
+    /**
+     * 将二维数组转换为 List<List<Double>> 格式。
+     *
+     * @param matrix 二维数组。
+     * @return List<List<Double>> 格式的结果。
+     */
+    public static List<List<Double>> convertMatrixToListOfLists(double[][] matrix) {
+        return java.util.Arrays.stream(matrix)
+                .map(row -> java.util.Arrays.stream(row).boxed().collect(Collectors.toList()))
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * 创建一个错误的响应实体。
+     *
+     * @param message 错误信息
+     * @return 包含错误信息的 ResponseEntity 对象
+     */
+    public static ResponseEntity<Object> badRequest(String message) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(message);
     }
 
 }

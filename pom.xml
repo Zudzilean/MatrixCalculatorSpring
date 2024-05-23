@@ -64,6 +64,7 @@
 		</plugins>
 	</build>
 
+
 	<repositories>
 		<repository>
 			<id>huaweicloud</id>

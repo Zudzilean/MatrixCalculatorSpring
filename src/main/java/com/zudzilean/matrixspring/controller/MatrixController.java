@@ -2,80 +2,92 @@ package com.zudzilean.matrixspring.controller;
 
 import com.zudzilean.matrixspring.domain.MatrixRequest;
 import com.zudzilean.matrixspring.service.MatrixCalculatorV1;
-import com.zudzilean.matrixspring.util.MatrixInputUtils;
+import com.zudzilean.matrixspring.strategy.MatrixOperationStrategy;
+import com.zudzilean.matrixspring.strategy.MatrixOperationStrategyImpl;
+import com.zudzilean.matrixspring.util.MatrixUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-/**
- *
- */
 @RestController
 @RequestMapping("/api/matrix")
 public class MatrixController {
 
-
-    private MatrixCalculatorV1 calculatorV1;
+    private final MatrixCalculatorV1 calculatorV1;
+    private final MatrixOperationStrategy operationStrategy;
 
     @Autowired
-    public void setCalculatorV1(MatrixCalculatorV1 calculatorV1) {
+    public MatrixController(MatrixCalculatorV1 calculatorV1, MatrixOperationStrategy operationStrategy) {
         this.calculatorV1 = calculatorV1;
+        this.operationStrategy = operationStrategy;
     }
 
     @PostMapping("/calculate")
     public ResponseEntity<?> calculateMatrix(@RequestBody MatrixRequest request) {
         try {
             // 验证矩阵A及其大小
-            double[][] matrixA = MatrixInputUtils.validateMatrix(request.getMatrixA(), request.getSizeA());
-            // 确认计算方式后，验证矩阵B及其大小
-            double[][] matrixB = ("add".equals(request.getOperation()) || "subtract".equals(request.getOperation())) ? MatrixInputUtils.validateMatrix(request.getMatrixB(), request.getSizeB()) : null;
+            double[][] matrixA = MatrixUtils.validateMatrix(request.getMatrixA(), request.getSizeA());
+            // 根据请求的操作类型，可能需要矩阵B
+            double[][] matrixB = request.getOperation() != null &&
+                    (request.getOperation().equals("add") || request.getOperation().equals("subtract"))
+                    ? MatrixUtils.validateMatrix(request.getMatrixB(), request.getSizeB())
+                    : null;
 
-            // TODO 根据Operation获取到计算结果 策略模式
-            // 根据操作类型执行不同的矩阵运算7
+            // 根据请求的操作类型执行不同的矩阵运算
             switch (request.getOperation()) {
                 case "add":
-                    return ResponseEntity.ok(convertMatrixToListOfLists(calculatorV1.add(matrixA, matrixB)));
                 case "subtract":
-                    return ResponseEntity.ok(convertMatrixToListOfLists(calculatorV1.subtract(matrixA, matrixB)));
+                    // 使用策略模式执行加法或减法
+                    return ResponseEntity.ok(convertMatrixToListOfLists(operationStrategy.execute(List.of(matrixA, matrixB))));
                 case "multiply":
-                    return ResponseEntity.ok(convertMatrixToListOfLists(calculatorV1.multiply(matrixA, matrixB)));
                 case "simplify":
-                    return ResponseEntity.ok(convertMatrixToListOfLists(calculatorV1.simplifyMatrix(matrixA)));
                 case "determinant":
-                    double det = calculatorV1.determinant(matrixA);
-                    return ResponseEntity.ok(Map.of("determinant", det));
                 case "inverse":
-                    double[][] inverseMatrix = calculatorV1.inverse(matrixA);
-                    if (inverseMatrix == null) {
-                        throw new IllegalArgumentException("Matrix inverse is null");
-                    }
-                    return ResponseEntity.ok(convertMatrixToListOfLists(inverseMatrix));
                 case "transpose":
-                    return ResponseEntity.ok(convertMatrixToListOfLists(calculatorV1.transpose(matrixA)));
+                    // 对于不需要矩阵B的操作，只传递矩阵A
+                    return executeSingleMatrixOperation(request, matrixA);
                 default:
                     throw new IllegalArgumentException("Unsupported operation: " + request.getOperation());
             }
-
-            // return ResponseEntity.ok(根据Operation获取到计算结果 策略模式)
         } catch (IllegalArgumentException e) {
-            // 记录日志
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         } catch (Exception e) {
-            // 记录日志
             throw new RuntimeException("An unexpected error occurred", e);
         }
     }
 
+    // 用于执行单个矩阵操作的私有方法
+    private ResponseEntity<?> executeSingleMatrixOperation(MatrixRequest request, double[][] matrixA) {
+        switch (request.getOperation()) {
+            case "multiply":
+                // 需要额外的逻辑来处理乘法，可能还需要矩阵B
+                break;
+            case "simplify":
+                return ResponseEntity.ok(convertMatrixToListOfLists(calculatorV1.simplifyMatrix(matrixA)));
+            case "determinant":
+                double det = calculatorV1.determinant(matrixA);
+                return ResponseEntity.ok(Map.of("determinant", det));
+            case "inverse":
+                double[][] inverseMatrix = calculatorV1.inverse(matrixA);
+                if (inverseMatrix == null) {
+                    throw new IllegalArgumentException("Matrix inverse is null");
+                }
+                return ResponseEntity.ok(convertMatrixToListOfLists(inverseMatrix));
+            case "transpose":
+                return ResponseEntity.ok(convertMatrixToListOfLists(calculatorV1.transpose(matrixA)));
+            default:
+                throw new IllegalArgumentException("Unsupported operation: " + request.getOperation());
+        }
+    }
 
     private List<List<Double>> convertMatrixToListOfLists(double[][] matrix) {
-        return java.util.Arrays.stream(matrix).map(row -> java.util.Arrays.stream(row).boxed().collect(Collectors.toList())).collect(Collectors.toList());
+        return java.util.Arrays.stream(matrix)
+                .map(row -> java.util.Arrays.stream(row).boxed().collect(Collectors.toList()))
+                .collect(Collectors.toList());
     }
 }

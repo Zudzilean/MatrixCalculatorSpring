@@ -2,14 +2,14 @@ package com.zudzilean.matrixspring.service;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import com.zudzilean.matrixspring.util.MatrixInputUtils;
+import com.zudzilean.matrixspring.util.MatrixUtils;
 import org.junit.jupiter.api.Test;
 
-public class MatrixInputUtilsTest {
+public class MatrixUtilsTest {
 
     @Test
     public void testValidateMatrixWithValidMatrix() {
-        MatrixInputUtils matrixInputUtils = new MatrixInputUtils();
+        MatrixUtils matrixUtils = new MatrixUtils();
         int[] size = {3, 3}; // 期望的矩阵大小
         double[][] matrix = {
                 {1, 2, 3},
@@ -17,24 +17,24 @@ public class MatrixInputUtilsTest {
                 {7, 8, 9}
         };
 
-        double[][] validatedMatrix = matrixInputUtils.validateMatrix(matrix, size);
+        double[][] validatedMatrix = matrixUtils.validateMatrix(matrix, size);
         assertNotNull(validatedMatrix);
         assertArrayEquals(matrix, validatedMatrix);
     }
 
     @Test
     public void testValidateMatrixWithNullMatrix() {
-        MatrixInputUtils matrixInputUtils = new MatrixInputUtils();
+        MatrixUtils matrixUtils = new MatrixUtils();
         int[] size = {3, 3}; // 期望的矩阵大小
 
         assertThrows(IllegalArgumentException.class, () -> {
-            matrixInputUtils.validateMatrix(null, size);
+            matrixUtils.validateMatrix(null, size);
         });
     }
 
     @Test
     public void testValidateMatrixWithInvalidSizeArray() {
-        MatrixInputUtils matrixInputUtils = new MatrixInputUtils();
+        MatrixUtils matrixUtils = new MatrixUtils();
         double[][] matrix = {
                 {1, 2},
                 {3, 4}
@@ -42,13 +42,13 @@ public class MatrixInputUtilsTest {
         int[] size = {2}; // 无效的大小数组
 
         assertThrows(IllegalArgumentException.class, () -> {
-            matrixInputUtils.validateMatrix(matrix, size);
+            matrixUtils.validateMatrix(matrix, size);
         });
     }
 
     @Test
     public void testValidateMatrixWithMatrixDimensionsMismatch() {
-        MatrixInputUtils matrixInputUtils = new MatrixInputUtils();
+        MatrixUtils matrixUtils = new MatrixUtils();
         int[] size = {2, 2}; // 期望的矩阵大小与实际矩阵不匹配
         double[][] matrix = {
                 {1, 2, 3},
@@ -56,7 +56,7 @@ public class MatrixInputUtilsTest {
         };
 
         assertThrows(IllegalArgumentException.class, () -> {
-            matrixInputUtils.validateMatrix(matrix, size);
+            matrixUtils.validateMatrix(matrix, size);
         });
     }
 
