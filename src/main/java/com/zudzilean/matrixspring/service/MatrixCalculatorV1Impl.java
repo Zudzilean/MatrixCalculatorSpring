@@ -1,8 +1,6 @@
 package com.zudzilean.matrixspring.service;
-
+//矩阵之间的计算
 public class MatrixCalculatorV1Impl implements MatrixCalculatorV1 {
-
-    //矩阵之间的计算
 
     //加法
     public double[][] add(double[][] matrixA, double[][] matrixB) {

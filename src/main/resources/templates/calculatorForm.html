@@ -8,6 +8,19 @@
             display: none;
         }
     </style>
+    <style>
+        .matrix-table {
+            border-collapse: collapse; /* 使表格边框合并为一个单一的边框 */
+            margin: 10px 0; /* 上下边距 */
+        }
+        .matrix-table td {
+            width: 50px; /* 单元格宽度 */
+            height: 50px; /* 单元格高度 */
+            text-align: center; /* 文本居中 */
+            border: 1px solid #000; /* 单元格边框 */
+            padding: 5px; /* 单元格内边距 */
+        }
+    </style>
 </head>
 <body>
 
@@ -184,7 +197,9 @@
             if (xhr.readyState === XMLHttpRequest.DONE) {
                 if (xhr.status === 200) {
                     document.getElementById('result').classList.remove('hidden');
-                    document.getElementById('result').textContent = 'Result: ' + xhr.responseText;
+                    // 假设返回的响应是一个JSON数组格式的矩阵
+                    const resultMatrix = JSON.parse(xhr.responseText);
+                    displayMatrixAsTable(resultMatrix);
                 } else {
                     document.getElementById('result').classList.remove('hidden');
                     document.getElementById('result').textContent = 'Error: ' + xhr.statusText;
@@ -197,6 +212,27 @@
             document.getElementById('result').textContent = 'Network Error';
         };
         xhr.send(JSON.stringify(data));
+    }
+
+
+    function displayMatrixAsTable(matrix) {
+        const resultElement = document.getElementById('result');
+        resultElement.innerHTML = ''; // 清空之前的结果
+
+        const table = document.createElement('table');
+        table.className = 'matrix-table';
+
+        matrix.forEach(row => {
+            const tr = document.createElement('tr'); // 创建行
+            row.forEach(value => {
+                const td = document.createElement('td'); // 创建单元格
+                td.textContent = value.toFixed(1); // 设置单元格内容并保留一位小数
+                tr.appendChild(td); // 将单元格添加到行中
+            });
+            table.appendChild(tr); // 将行添加到表格中
+        });
+
+        resultElement.appendChild(table); // 将表格添加到结果元素中
     }
 </script>
 

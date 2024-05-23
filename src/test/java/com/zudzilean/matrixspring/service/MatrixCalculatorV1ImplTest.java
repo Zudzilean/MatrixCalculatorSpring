@@ -98,18 +98,38 @@ class MatrixCalculatorV1ImplTest {
 
         // 测试用例3：具有特定结构的矩阵
         double[][] specificMatrix = {
-                {2, 3, 1},
+                {2, 4, 1},
                 {4, 6, 2},
-                {0, 0, 3}
+                {6, 0, 3}
         };
         double[][] expectedSimplifiedMatrix = {
-                {1, 1.5, 0},
-                {0, 0, 1},
+                {1, 0, 0.5},
+                {0, 1, 0},
                 {0, 0, 0}
         };
         double[][] simplifiedSpecificMatrix = matrixCalculator.simplifyMatrix(specificMatrix);
+
+        double delta = 1e-10; // 根据需要选择合适的容差值
+
+        for (int i = 0; i < expectedSimplifiedMatrix.length; i++) {
+            for (int j = 0; j < expectedSimplifiedMatrix[i].length; j++) {
+                // 四舍五入到小数点后两位
+                double roundedExpected = Math.round(expectedSimplifiedMatrix[i][j] * 100.0) / 100.0;
+                double roundedActual = Math.round(simplifiedSpecificMatrix[i][j] * 100.0) / 100.0;
+
+                // 使用容差值比较两个浮点数是否相等
+                assertEquals(roundedExpected, roundedActual, delta,
+                        String.format(
+                                "Mismatch at [%d][%d] Expected: %.1f, Actual: %.1f",
+                                i, j, roundedExpected, roundedActual
+                        ));
+            }
+        }
+
         assertArrayEquals(expectedSimplifiedMatrix, simplifiedSpecificMatrix, "Mismatch in simplified matrix");
-        // 可以添加更多测试用例...
+
+
+
     }
 
     private void assertArrayEquals(double[][] expected, double[][] actual, String message) {
