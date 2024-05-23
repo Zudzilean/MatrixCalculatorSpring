@@ -5,7 +5,22 @@ public class MatrixInputUtils {
     private static final int MAX_SIZE = 10;
     private static final long MAX_VALUE = 1000000;
 
-
+    /**
+     * 验证给定的矩阵是否符合特定的尺寸和值范围要求。
+     *
+     * @param matrix 要验证的矩阵。
+     * @param size 一个整型数组，包含矩阵期望的行数和列数，其中size[0]为行数，size[1]为列数。
+     * @return 验证通过的矩阵。
+     * @throws IllegalArgumentException 如果矩阵或其尺寸信息不符合以下任一条件：
+     *                                 <ul>
+     *                                 <li>size数组为null或不包含两个元素。</li>
+     *                                 <li>矩阵的行数或列数小于等于0，或大于{@value #MAX_SIZE}。</li>
+     *                                 <li>矩阵为null。</li>
+     *                                 <li>矩阵的实际尺寸与提供的size数组不匹配。</li>
+     *                                 <li>矩阵的行长度不一致。</li>
+     *                                 <li>矩阵中的值不在0和{@value #MAX_VALUE}之间。</li>
+     *                                 <ul>
+     */
     public static double[][] validateMatrix(double[][] matrix, int[] size) throws IllegalArgumentException {
         // 检查 size 数组是否为 null 或长度不为 2
         if (size == null || size.length != 2) {
@@ -26,7 +41,7 @@ public class MatrixInputUtils {
         }
 
         // 检查矩阵是否符合给定的大小
-        if (matrix.length != expectedRows || (matrix.length > 0 && matrix[0].length != expectedColumns)) {
+        if (matrix.length != expectedRows || matrix[0].length != expectedColumns) {
             throw new IllegalArgumentException("Matrix dimensions do not match the provided size.");
         }
 

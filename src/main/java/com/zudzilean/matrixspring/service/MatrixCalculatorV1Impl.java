@@ -1,13 +1,21 @@
 package com.zudzilean.matrixspring.service;
 
 import org.springframework.stereotype.Service;
-
-//矩阵之间的计算
+/**
+ * 实现矩阵的基本运算，包括加法、减法、乘法、化简、转置、行列式和逆矩阵的计算。
+ */
 // TODO:类注释 方法注释调整
 @Service
 public class MatrixCalculatorV1Impl implements MatrixCalculatorV1 {
-
-    //加法
+    /**
+     * 对两个矩阵进行加法运算。
+     *
+     * @param matrixA 第一个矩阵。
+     * @param matrixB 第二个矩阵。
+     * @return 两个矩阵相加的结果矩阵。
+     * @throws IllegalArgumentException 如果矩阵尺寸不匹配，无法进行加法运算。
+     */
+    @Override
     public double[][] add(double[][] matrixA, double[][] matrixB) {
         if (matrixA.length != matrixB.length || matrixA[0].length != matrixB[0].length) {
             throw new IllegalArgumentException("Matrices must be the same size for addition.");
@@ -22,7 +30,15 @@ public class MatrixCalculatorV1Impl implements MatrixCalculatorV1 {
         return result;
     }
 
-    //减法
+    /**
+     * 对两个矩阵进行减法运算。
+     *
+     * @param matrixA 被减矩阵。
+     * @param matrixB 减去的矩阵。
+     * @return 两个矩阵相减的结果矩阵。
+     * @throws IllegalArgumentException 如果矩阵尺寸不匹配，无法进行减法运算。
+     */
+    @Override
     public double[][] subtract(double[][] matrixA, double[][] matrixB) {
         if (matrixA.length != matrixB.length || matrixA[0].length != matrixB[0].length) {
             throw new IllegalArgumentException("Matrices must be the same size for subtraction.");
@@ -37,7 +53,15 @@ public class MatrixCalculatorV1Impl implements MatrixCalculatorV1 {
         return result;
     }
 
-    //乘法
+    /**
+     * 对两个矩阵进行乘法运算。
+     *
+     * @param matrixA 第一个矩阵。
+     * @param matrixB 第二个矩阵。
+     * @return 两个矩阵相乘的结果矩阵。
+     * @throws IllegalArgumentException 如果矩阵的列数不匹配，无法进行乘法运算。
+     */
+    @Override
     public double[][] multiply(double[][] matrixA, double[][] matrixB) {
         if (matrixA[0].length != matrixB.length) {
             throw new IllegalArgumentException("The number of columns in the first matrix must equal the number of rows in the second for multiplication.");
@@ -56,7 +80,13 @@ public class MatrixCalculatorV1Impl implements MatrixCalculatorV1 {
         return result;
     }
 
-    //二维矩阵化简并打印过程
+    /**
+     * 对矩阵进行化简，使用高斯消元法。
+     *
+     * @param matrix 需要化简的矩阵。
+     * @return 化简后的矩阵。
+     */
+    @Override
     public double[][] simplifyMatrix(double[][] matrix) {
         int rows = matrix.length;
         int cols = matrix[0].length;
@@ -193,7 +223,13 @@ public class MatrixCalculatorV1Impl implements MatrixCalculatorV1 {
 
     }
 
-    //计算二维矩阵的转换
+    /**
+     * 计算矩阵的转置。
+     *
+     * @param matrix 需要计算转置的矩阵。
+     * @return 矩阵的转置。
+     */
+    @Override
     public double[][] transpose(double[][] matrix) {
         int m = matrix.length, n = matrix[0].length;
         double[][] ans = new double[n][m];
@@ -205,7 +241,14 @@ public class MatrixCalculatorV1Impl implements MatrixCalculatorV1 {
         return ans;
     }
 
-    // 计算矩阵的行列式
+    /**
+     * 计算矩阵的行列式。
+     *
+     * @param matrix 需要计算行列式的矩阵。
+     * @return 矩阵的行列式值。
+     * @throws IllegalArgumentException 如果矩阵不是方阵，无法计算行列式。
+     */
+    @Override
     public double determinant(double[][] matrix) {
         int n = matrix.length;
         if (n == 0 || n != matrix[0].length) {
@@ -248,9 +291,24 @@ public class MatrixCalculatorV1Impl implements MatrixCalculatorV1 {
         return det;
     }
 
-    //计算二维矩阵的inverse逆矩阵
-    public double[][] inverse(double[][] matrix) throws Exception {
+    /**
+     * 计算矩阵的逆矩阵。
+     *
+     * @param matrix 需要计算逆矩阵的方阵。
+     * @return 矩阵的逆矩阵。
+     * @throws IllegalArgumentException 如果矩阵不是方阵或不可逆。
+     */
+    @Override
+    public double[][] inverse(double[][] matrix) {
         int n = matrix.length;
+        if (n == 0 || matrix[0].length != n) {
+            throw new IllegalArgumentException("Matrix must be non-empty and square.");
+        }
+
+        // 检查矩阵是否可逆
+        if (determinant(matrix) == 0) {
+            throw new IllegalArgumentException("Matrix is not invertible because its determinant is zero.");
+        }
 
         // 创建增广矩阵，左边是原矩阵，右边是单位矩阵
         double[][] augmentedMatrix = new double[n][2 * n];
@@ -267,9 +325,7 @@ public class MatrixCalculatorV1Impl implements MatrixCalculatorV1 {
         // 从增广矩阵中提取逆矩阵
         double[][] inverseMatrix = new double[n][n];
         for (int i = 0; i < n; i++) {
-            for (int j = 0; j < n; j++) {
-                inverseMatrix[i][j] = augmentedMatrix[i][j + n];
-            }
+            System.arraycopy(augmentedMatrix[i], n, inverseMatrix[i], 0, n);
         }
 
         return inverseMatrix;
