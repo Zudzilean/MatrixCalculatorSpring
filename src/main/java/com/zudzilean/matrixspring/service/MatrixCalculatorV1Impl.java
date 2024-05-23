@@ -66,8 +66,7 @@ public class MatrixCalculatorV1Impl implements MatrixCalculatorV1 {
         for (int col = 0; col < cols && row < rows; col++) {
 
             // 找到当前列第一个非零元素的行索引
-            int[] result = findFirstNonZero(matrix, col, row, rows);
-            int nonZeroRowIndex = result[0];
+            int nonZeroRowIndex = findFirstNonZero(matrix, col, row, rows);
             if (nonZeroRowIndex == -1) {
                 continue; // 如果整列都是零，则跳过
             }
@@ -79,6 +78,7 @@ public class MatrixCalculatorV1Impl implements MatrixCalculatorV1 {
                 printMatrix(matrix);
 
             }
+            nonZeroRowIndex = row;
             // 归一化首非零元素为1
             double factor = matrix[nonZeroRowIndex][col];
             if (factor != 1) {
@@ -110,11 +110,10 @@ public class MatrixCalculatorV1Impl implements MatrixCalculatorV1 {
 
         // 上三角继续简化
         for (row = rows - 1; row >= 0; row--) {
-
             // 找到当前行第一个非零元素的行索列
             int nonZeroColIndex = findLastNonZero(matrix, row);
             if (nonZeroColIndex == -1) {
-                continue; // 如果整列都是零，则跳过
+                continue; // 如果整行都是零，则跳过
             }
 
             // 将当前列上面的所有行的对应元素置为0
@@ -172,23 +171,20 @@ public class MatrixCalculatorV1Impl implements MatrixCalculatorV1 {
         }
     }
 
-    private int[] findFirstNonZero(double[][] matrix, int col, int startRow, int endRow) {
+    private int findFirstNonZero(double[][] matrix, int col, int startRow, int endRow) {
         for (int i = startRow; i < endRow; i++) {
             if (matrix[i][col] != 0) {
-                return new int[]{i, col}; // 返回非零元素所在的行和列索引
+                return i; // 只返回非零元素所在的行索引
             }
         }
-        return new int[]{-1, -1}; // 如果没有找到非零元素
+        return -1; // 如果没有找到非零元素
     }
 
     private int findLastNonZero(double[][] matrix, int row) {
-        int col = matrix[row].length;
-        for (int i = row; i >= 0; i--) {
-            for (int j = 0; j < col; j++) {
-                if (matrix[i][j] != 0) {
-                    return i;
-                }
-            }
+        int cols = matrix[row].length;
+        for(int col=0;col<cols;col++){
+            if(matrix[row][col] != 0)
+                return col;
         }
         return -1;
 
