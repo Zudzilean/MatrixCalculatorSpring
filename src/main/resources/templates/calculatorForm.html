@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <title>Matrix Calculator</title>
@@ -7,29 +7,26 @@
         .hidden {
             display: none;
         }
-    </style>
-    <style>
         .matrix-table {
-            border-collapse: collapse; /* 使表格边框合并为一个单一的边框 */
-            margin: 10px 0; /* 上下边距 */
+            border-collapse: collapse;
+            margin: 10px 0;
         }
         .matrix-table td {
-            width: 50px; /* 单元格宽度 */
-            height: 50px; /* 单元格高度 */
-            text-align: center; /* 文本居中 */
-            border: 1px solid #000; /* 单元格边框 */
-            padding: 5px; /* 单元格内边距 */
+            width: 50px;
+            height: 50px;
+            text-align: center;
+            border: 1px solid #000;
+            padding: 5px;
         }
     </style>
 </head>
 <body>
 
-<h2>Matrix Calculator</h2>
+<h2 id="page-title">Matrix Calculator</h2>
 
-<!-- 初始表单：选择操作类型 -->
 <div id="step1">
     <label for="operation">Operation: </label>
-    <select id="operation" name="operation" onchange="showMatrixSizeForm()">
+    <select id="operation" name="operation" onchange="updatePageTitleAndShowMatrixSizeForm()">
         <option value="">Select Operation</option>
         <option value="add">Add</option>
         <option value="subtract">Subtract</option>
@@ -66,12 +63,38 @@
 <div id="result" class="hidden"></div>
 
 <script>
+
     let operation = '';
 
     function restart() {
         if (confirm('Are you sure you want to start over?')) {
             location.reload();
         }
+    }
+
+    function updatePageTitleAndShowMatrixSizeForm() {
+        updatePageTitle();
+        showMatrixSizeForm();
+    }
+
+    function updatePageTitle() {
+        const operationElement = document.getElementById('operation');
+        const operation = operationElement.value;
+        const titleElement = document.getElementById('page-title');
+
+        // 根据操作类型确定标题
+        let title = 'Matrix Calculator';
+        if (operation) {
+            title += ` : ${operation}`;
+            // 检查操作是否需要两个矩阵
+            if (["add", "subtract", "multiply"].includes(operation)) {
+                title += ' A & B';
+            } else {
+                title += ' A';
+            }
+        }
+
+        titleElement.textContent = title;
     }
 
     function showMatrixSizeForm() {
@@ -103,32 +126,30 @@
 
     function showMatrixValueForm(event) {
         event.preventDefault(); // 阻止表单提交
-        const operation = document.getElementById('operation').value;
-        const sizeInputs = document.getElementById('matrixSizeInputs');
-        const valueInputsElement = document.getElementById('matrixValueInputs');
-        valueInputsElement.innerHTML = ''; // 清空之前的输入框
 
-        // 根据操作类型确定需要显示的矩阵数量
-        let matrixCount = 1;
+        // 根据选择的操作类型确定矩阵的前缀
+        const matrixPrefixes = ['A'];
         if (["add", "subtract", "multiply"].includes(operation)) {
-            matrixCount = 2;
+            matrixPrefixes.push('B');
         }
 
+        // 清空之前的输入框
+        const valueInputsElement = document.getElementById('matrixValueInputs');
+        valueInputsElement.innerHTML = '';
+
         // 循环创建每个矩阵的输入框
-        for (let matrixIndex = 0; matrixIndex < matrixCount; matrixIndex++) {
-            const sizeId = matrixIndex === 0 ? 'ASize' : 'BSize';
+        matrixPrefixes.forEach((prefix) => {
+            const sizeId = `${prefix}Size`;
             const matrixValues = document.getElementById(sizeId).value.split(',').map(Number);
             const rows = matrixValues[0];
             const cols = matrixValues[1];
-            let matrixInputHtml = `<div><label>Matrix ${'A' + (matrixIndex === 1 ? 'B' : '')}:</label><br>`;
+            let matrixInputHtml = `<div><label>Matrix ${prefix}:</label><br>`;
 
             for (let row = 0; row < rows; row++) {
                 matrixInputHtml += `<div>Row ${row + 1}: `;
                 for (let col = 0; col < cols; col++) {
-                    // 现在我们使用 matrixIndex 来确定前缀，并构建 input 的 id 和 name
-                    const matrixPrefix = matrixIndex === 0 ? 'A' : 'B';
-                    const inputId = `matrix${matrixPrefix}_${row}-${col}`;
-                    const inputName = `matrix${matrixPrefix}[${row}][${col}]`;
+                    const inputId = `matrix${prefix}_${row}-${col}`;
+                    const inputName = `matrix${prefix}[${row}][${col}]`;
                     matrixInputHtml += `<input type="text" id="${inputId}" name="${inputName}" placeholder="0.0" required> `;
                 }
                 matrixInputHtml += `</div>`; // Close Row div
@@ -136,7 +157,7 @@
 
             matrixInputHtml += `</div>`; // Close Matrix div
             valueInputsElement.innerHTML += matrixInputHtml;
-        }
+        });
 
         // 显示第三步表单，并隐藏第二步表单
         document.getElementById('step2').classList.add('hidden');
