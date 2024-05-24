@@ -1,12 +1,13 @@
-package com.zudzilean.matrixspring.service;
+package com.zudzilean.matrixspring.operation;
 
 import org.springframework.stereotype.Service;
+
 /**
  * 实现矩阵的基本运算，包括加法、减法、乘法、化简、转置、行列式和逆矩阵的计算。
  */
 // TODO:类注释 方法注释调整
 @Service
-public class MatrixCalculatorV1Impl implements MatrixCalculatorV1 {
+public class MatrixOperationImpl implements MatrixOperation {
     /**
      * 对两个矩阵进行加法运算。
      *
@@ -330,6 +331,7 @@ public class MatrixCalculatorV1Impl implements MatrixCalculatorV1 {
 
         return inverseMatrix;
     }
+
 }
 
 

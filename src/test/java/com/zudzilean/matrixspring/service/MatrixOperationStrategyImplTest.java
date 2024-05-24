@@ -1,12 +1,13 @@
 package com.zudzilean.matrixspring.service;
 
+import com.zudzilean.matrixspring.strategy.MatrixOperationStrategyImpl;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-class MatrixCalculatorV1ImplTest {
+class MatrixOperationStrategyImplTest {
 
-    MatrixCalculatorV1Impl matrixCalculator = new MatrixCalculatorV1Impl();
+    MatrixOperationStrategyImpl matrixCalculator = new MatrixOperationStrategyImpl();
     @Test
     void add() {
         double[][] matrixA = {

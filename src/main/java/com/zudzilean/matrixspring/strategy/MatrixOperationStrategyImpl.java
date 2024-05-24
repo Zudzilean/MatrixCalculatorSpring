@@ -1,28 +1,43 @@
 package com.zudzilean.matrixspring.strategy;
 
-import com.zudzilean.matrixspring.strategy.MatrixOperationStrategy;
+import org.springframework.stereotype.Service;
+
 import java.util.List;
 
-public class MatrixOperationStrategyImpl implements MatrixOperationStrategy {
+@Service
+public class MatrixOperationStrategyImpl
+        extends com.zudzilean.matrixspring.operation.MatrixOperationImpl
+        implements MatrixOperationStrategy {
 
     @Override
-    public double[][] execute(List<double[][]> matrices) {
-        // 检查输入列表至少包含两个矩阵
-        if (matrices == null || matrices.size() < 2) {
-            throw new IllegalArgumentException("需要至少两个矩阵来进行操作");
+    public double[][] execute(String operation, List<double[][]> matrices) {
+        // 检查操作参数是否为空
+        if (operation == null || matrices == null || matrices.isEmpty()) {
+            throw new IllegalArgumentException("Operation or matrices list cannot be null or empty.");
         }
 
-        // 假设所有矩阵具有相同的维度
-        double[][] result = matrices.getFirst();
-        for (int i = 1; i < matrices.size(); i++) {
-            double[][] currentMatrix = matrices.get(i);
-            // 执行加法操作
-            for (int row = 0; row < result.length; row++) {
-                for (int col = 0; col < result[row].length; col++) {
-                    result[row][col] += currentMatrix[row][col];
-                }
-            }
+        switch (operation.toLowerCase()) {
+            case "add":
+                return super.add(matrices.get(0), matrices.get(1));
+            case "subtract":
+                return super.subtract(matrices.get(0), matrices.get(1));
+            case "multiply":
+                return super.multiply(matrices.get(0), matrices.get(1));
+            case "simplify":
+                return super.simplifyMatrix(matrices.getFirst());
+            case "determinant":
+                // 包装determinant方法返回的double数值到一个double[][]矩阵中
+                double det = super.determinant(matrices.getFirst());
+                return new double[][]{{det}};
+            case "inverse":
+                return super.inverse(matrices.getFirst());
+            case "transpose":
+                return super.transpose(matrices.getFirst());
+            default:
+                throw new UnsupportedOperationException("Operation '" + operation + "' is not supported.");
         }
-        return result;
     }
+
+
+
 }
