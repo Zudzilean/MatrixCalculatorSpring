@@ -16,24 +16,20 @@ import java.util.stream.Collectors;
 public class MatrixController {
 
     private final MatrixService matrixService;
-    private final MatrixFactory matrixFactory;
 
     @Autowired
     public MatrixController(MatrixService matrixService, MatrixFactory matrixFactory) {
         this.matrixService = matrixService;
-        this.matrixFactory = matrixFactory; // Spring 将注入 MatrixFactoryImpl 的实例
     }
 
     @PostMapping("/calculate")
     public ResponseEntity<?> calculateMatrix(@RequestBody MatrixRequest request) {
         try {
-            // 使用工厂根据请求创建矩阵
-            List<double[][]> matrices = request.getMatrices().stream()
-                    .map(sizeValuesPair -> matrixFactory.createMatrix(sizeValuesPair.getSize(), sizeValuesPair.getValues()))
-                    .collect(Collectors.toList());
+            // 直接调用MatrixRequest的getMatrices方法获取已经创建好的矩阵列表
+            List<double[][]> matrices = request.getMatrices();
 
             // 调用服务层执行操作
-            return matrixService.performOperation(request.getOperation(), matrices);
+            return matrixService.performOperation(request.getOperationType(), matrices);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         } catch (Exception e) {

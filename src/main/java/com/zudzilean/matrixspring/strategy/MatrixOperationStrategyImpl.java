@@ -11,30 +11,59 @@ public class MatrixOperationStrategyImpl
 
     @Override
     public double[][] execute(String operation, List<double[][]> matrices) {
-        // 检查操作参数是否为空
-        if (operation == null || matrices == null || matrices.isEmpty()) {
-            throw new IllegalArgumentException("Operation or matrices list cannot be null or empty.");
+        if (operation == null || matrices == null) {
+            throw new IllegalArgumentException("Operation cannot be null and matrices list cannot be null.");
         }
 
         switch (operation.toLowerCase()) {
             case "add":
-                return super.add(matrices.get(0), matrices.get(1));
             case "subtract":
-                return super.subtract(matrices.get(0), matrices.get(1));
             case "multiply":
-                return super.multiply(matrices.get(0), matrices.get(1));
+                return performBinaryOperation(operation, matrices);
             case "simplify":
-                return super.simplifyMatrix(matrices.getFirst());
             case "determinant":
-                // 包装determinant方法返回的double数值到一个double[][]矩阵中
-                double det = super.determinant(matrices.getFirst());
-                return new double[][]{{det}};
             case "inverse":
-                return super.inverse(matrices.getFirst());
             case "transpose":
-                return super.transpose(matrices.getFirst());
+                return performUnaryOperation(operation, matrices);
             default:
                 throw new UnsupportedOperationException("Operation '" + operation + "' is not supported.");
+        }
+    }
+
+    private double[][] performBinaryOperation(String operation, List<double[][]> matrices) {
+        if (matrices.size() < 2) {
+            throw new IllegalArgumentException("Binary operation requires at least two matrices.");
+        }
+        double[][] m1 = matrices.get(0);
+        double[][] m2 = matrices.get(1);
+        switch (operation) {
+            case "add":
+                return  super.add(m1, m2);
+            case "subtract":
+                return super.subtract(m1, m2);
+            case "multiply":
+                return super.multiply(m1, m2);
+            default:
+                throw new UnsupportedOperationException("Operation '" + operation + "' is not supported for binary operations.");
+        }
+    }
+
+    private double[][] performUnaryOperation(String operation, List<double[][]> matrices) {
+        if (matrices.isEmpty()) {
+            throw new IllegalArgumentException("Unary operation requires at least one matrix.");
+        }
+        double[][] m = matrices.get(0);
+        switch (operation) {
+            case "simplify":
+                return super.simplifyMatrix(m);
+            case "determinant":
+                return new double[][]{{super.determinant(m)}};
+            case "inverse":
+                return super.inverse(m);
+            case "transpose":
+                return super.transpose(m);
+            default:
+                throw new UnsupportedOperationException("Operation '" + operation + "' is not supported for unary operations.");
         }
     }
 

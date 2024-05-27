@@ -2,7 +2,6 @@ package com.zudzilean.matrixspring.domain;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,15 +11,14 @@ import java.util.List;
 @Setter
 public class MatrixRequest {
 
-    private String operationType; // 操作类型
     /**
-     * 获取要执行的操作类型。
+     * -- GETTER --
+     *  获取要执行的操作类型。
      *
      * @return 操作类型。
      */
-    public String getOperation() {
-        return operationType;
-    }
+    @Getter
+    private String operationType; // 操作类型
 
     // 用于存储单个矩阵的尺寸和数值
     private List<MatrixData> matricesData;
@@ -40,6 +38,7 @@ public class MatrixRequest {
     }
 
     // 根据MatrixData创建实际的矩阵
+
     private double[][] createMatrix(MatrixData data) {
         int rows = data.getSize()[0];
         int columns = data.getSize()[1];
