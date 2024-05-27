@@ -5,9 +5,9 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-class MatrixCalculatorV1ImplTest {
+class MatrixServiceImplTest {
 
-    MatrixCalculatorV1Impl matrixCalculator = new MatrixCalculatorV1Impl();
+    MatrixServiceImpl matrixCalculator = new MatrixServiceImpl();
     @Test
     void add() {
         double[][] matrixA = {

@@ -10,7 +10,7 @@ package com.zudzilean.matrixspring.service;
  * @version 1.0
  * @since 1.0
  */
-public interface MatrixCalculatorV1 {
+public interface MatrixService {
 
     /**
      * 对两个相同大小的矩阵进行加法运算。

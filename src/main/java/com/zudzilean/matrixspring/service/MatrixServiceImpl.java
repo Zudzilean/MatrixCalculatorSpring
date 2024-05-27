@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service;
  */
 // TODO:类注释 方法注释调整
 @Service
-public class MatrixCalculatorV1Impl implements MatrixCalculatorV1 {
+public class MatrixServiceImpl implements MatrixService {
     /**
      * 对两个矩阵进行加法运算。
      *

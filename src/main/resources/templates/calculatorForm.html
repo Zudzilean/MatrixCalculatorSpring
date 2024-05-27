@@ -255,24 +255,10 @@
         resultElement.appendChild(table); // 将表格添加到结果元素中
     }
 
-    function displayDeterminantResult(detValue) {
-        const resultElement = document.getElementById('result');
-        const parsedResult = parseFloat(detValue);
-
-        if (!isNaN(parsedResult)) {
-            resultElement.textContent = `Determinant: ${parsedResult.toFixed(2)}`;
-        } else {
-            resultElement.textContent = 'Error: Invalid determinant value.';
-        }
-    }
 
     // 新函数，用于处理不同的响应类型
     function handleMatrixCalculationResponse(operation, response) {
-        if (operation === "determinant") {
-            displayDeterminantResult(response.determinant);
-        } else {
             displayMatrixAsTable(response);
-        }
     }
 
 </script>
