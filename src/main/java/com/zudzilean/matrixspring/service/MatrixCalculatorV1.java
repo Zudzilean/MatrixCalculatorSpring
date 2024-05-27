@@ -52,7 +52,7 @@ public interface MatrixCalculatorV1 {
      * @param matrix 需要简化的矩阵。
      * @return 简化后的矩阵。
      */
-    double[][] simplifyMatrix(double[][] matrix);
+    double[][] simplify(double[][] matrix);
 
     /**
      * 计算矩阵的行列式。
@@ -63,7 +63,7 @@ public interface MatrixCalculatorV1 {
      * @return 矩阵的行列式值。
      * @throws IllegalArgumentException 如果矩阵不是方阵。
      */
-    double determinant(double[][] matrix);
+    double[][] determinant(double[][] matrix);
 
     /**
      * 计算矩阵的逆矩阵。

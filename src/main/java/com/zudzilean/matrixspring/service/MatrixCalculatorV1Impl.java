@@ -87,7 +87,7 @@ public class MatrixCalculatorV1Impl implements MatrixCalculatorV1 {
      * @return 化简后的矩阵。
      */
     @Override
-    public double[][] simplifyMatrix(double[][] matrix) {
+    public double[][] simplify(double[][] matrix) {
         int rows = matrix.length;
         int cols = matrix[0].length;
         int row = 0; // 当前处理的行
@@ -249,7 +249,7 @@ public class MatrixCalculatorV1Impl implements MatrixCalculatorV1 {
      * @throws IllegalArgumentException 如果矩阵不是方阵，无法计算行列式。
      */
     @Override
-    public double determinant(double[][] matrix) {
+    public double[][] determinant(double[][] matrix) {
         int n = matrix.length;
         if (n == 0 || n != matrix[0].length) {
             throw new IllegalArgumentException("Matrix must be non-empty and square.");
@@ -257,17 +257,29 @@ public class MatrixCalculatorV1Impl implements MatrixCalculatorV1 {
 
         // 对于1x1矩阵，行列式就是矩阵中唯一的元素
         if (n == 1) {
-            return matrix[0][0];
+            return convertNumberToMatrix(matrix[0][0]);
         }
 
         // 对于2x2矩阵，使用ad - bc公式计算行列式
         if (n == 2) {
-            return matrix[0][0] * matrix[1][1] - matrix[0][1] * matrix[1][0];
+            return convertNumberToMatrix(matrix[0][0] * matrix[1][1] - matrix[0][1] * matrix[1][0]);
         }
 
 
         // 对于大于2x2的矩阵，使用递归的拉普拉斯展开
-        return laplacianExpansion(matrix);
+        return convertNumberToMatrix(laplacianExpansion(matrix));
+    }
+
+    //将一个数字转化为二维数组
+    private double[][] convertNumberToMatrix(double n) {
+        // 创建一个1x1的二维数组
+        double[][] matrix = new double[1][1];
+
+        // 将数字n赋值给数组的第一个元素
+        matrix[0][0] = n;
+
+        // 返回这个1x1的二维数组
+        return matrix;
     }
 
     // 拉普拉斯展开递归方法
@@ -286,7 +298,8 @@ public class MatrixCalculatorV1Impl implements MatrixCalculatorV1 {
                 }
             }
             // 递归计算子矩阵的行列式，并累加结果
-            det += Math.pow(-1, i) * matrix[0][i] * determinant(subMatrix);
+            double[][] deter =determinant(subMatrix);
+            det += Math.pow(-1, i) * matrix[0][i] * deter[0][0];
         }
         return det;
     }
@@ -306,7 +319,8 @@ public class MatrixCalculatorV1Impl implements MatrixCalculatorV1 {
         }
 
         // 检查矩阵是否可逆
-        if (determinant(matrix) == 0) {
+        double[][] deter =determinant(matrix);
+        if (deter[0][0] == 0) {
             throw new IllegalArgumentException("Matrix is not invertible because its determinant is zero.");
         }
 
@@ -320,7 +334,7 @@ public class MatrixCalculatorV1Impl implements MatrixCalculatorV1 {
         }
 
         // 对增广矩阵进行高斯消元
-        simplifyMatrix(augmentedMatrix);
+        simplify(augmentedMatrix);
 
         // 从增广矩阵中提取逆矩阵
         double[][] inverseMatrix = new double[n][n];

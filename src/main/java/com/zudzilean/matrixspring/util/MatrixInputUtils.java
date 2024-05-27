@@ -22,7 +22,7 @@ public class MatrixInputUtils {
      *                                 <ul>
      */
     public static double[][] validateMatrix(double[][] matrix, int[] size) throws IllegalArgumentException {
-        // 检查 size 数组是否为 null 或长度不为 2
+        // 检查 矩阵大小的size 数组是否为 null 或长度不为 2
         if (size == null || size.length != 2) {
             throw new IllegalArgumentException("Size array must not be null and must have exactly two elements.");
         }
@@ -64,5 +64,7 @@ public class MatrixInputUtils {
         // 如果所有检查都通过，则返回矩阵
         return matrix;
     }
+
+
 
 }

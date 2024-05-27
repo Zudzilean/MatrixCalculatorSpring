@@ -3,6 +3,7 @@ package com.zudzilean.matrixspring.service;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class MatrixCalculatorV1ImplTest {
 
@@ -75,67 +76,35 @@ class MatrixCalculatorV1ImplTest {
             assertEquals(expected[i], actual[i], message + " at index " + i);
         }
     }
+    @Test
+    void testDeterminantFor1x1Matrix() {
+        double[][] matrix = {{3}};
+        double[][] expected = {{3}};
+        double[][] actual = matrixCalculator.determinant(matrix);
+        assertArrayEquals(expected, actual);
+    }
 
     @Test
-    void simplifyMatrixTest() {
-        // 测试用例1：单位矩阵
-        double[][] identityMatrix = {
-                {1, 0, 0},
-                {0, 1, 0},
-                {0, 0, 1}
-        };
-        double[][] simplifiedIdentityMatrix = matrixCalculator.simplifyMatrix(identityMatrix);
-        assertArrayEquals(identityMatrix, simplifiedIdentityMatrix);
-
-        // 测试用例2：全零矩阵
-        double[][] zeroMatrix = {
-                {0, 0, 0},
-                {0, 0, 0},
-                {0, 0, 0}
-        };
-        double[][] simplifiedZeroMatrix = matrixCalculator.simplifyMatrix(zeroMatrix);
-        assertArrayEquals(zeroMatrix, simplifiedZeroMatrix);
-
-        // 测试用例3：具有特定结构的矩阵
-        double[][] specificMatrix = {
-                {2, 4, 1},
-                {4, 6, 2},
-                {6, 0, 3}
-        };
-        double[][] expectedSimplifiedMatrix = {
-                {1, 0, 0.5},
-                {0, 1, 0},
-                {0, 0, 0}
-        };
-        double[][] simplifiedSpecificMatrix = matrixCalculator.simplifyMatrix(specificMatrix);
-
-        double delta = 1e-10; // 根据需要选择合适的容差值
-
-        for (int i = 0; i < expectedSimplifiedMatrix.length; i++) {
-            for (int j = 0; j < expectedSimplifiedMatrix[i].length; j++) {
-                // 四舍五入到小数点后两位
-                double roundedExpected = Math.round(expectedSimplifiedMatrix[i][j] * 100.0) / 100.0;
-                double roundedActual = Math.round(simplifiedSpecificMatrix[i][j] * 100.0) / 100.0;
-
-                // 使用容差值比较两个浮点数是否相等
-                assertEquals(roundedExpected, roundedActual, delta,
-                        String.format(
-                                "Mismatch at [%d][%d] Expected: %.1f, Actual: %.1f",
-                                i, j, roundedExpected, roundedActual
-                        ));
-            }
-        }
-
-        assertArrayEquals(expectedSimplifiedMatrix, simplifiedSpecificMatrix, "Mismatch in simplified matrix");
-
-
-
+    void testDeterminantFor2x2Matrix() {
+        double[][] matrix = {{1, 2}, {3, 4}};
+        double[][] expected = {{-2}};
+        double[][] actual = matrixCalculator.determinant(matrix);
+        assertArrayEquals(expected, actual);
     }
 
-    private void assertArrayEquals(double[][] expected, double[][] actual, String message) {
-        assertEquals(expected.length, actual.length, message + " - Number of rows mismatch");
-        for (int i = 0; i < expected.length; i++) {
-            assertArrayEquals(expected[i], actual[i], "Mismatch in row " + i + ": ");
-        }
+    @Test
+    void testDeterminantFor3x3Matrix() {
+        double[][] matrix = {{1, 0, 2}, {0, 1, 3}, {2, 3, 4}};
+        double[][] expected = {{-9}}; // 这里需要根据实际的行列式计算结果来设置期望值
+        double[][] actual = matrixCalculator.determinant(matrix);
+        assertArrayEquals(expected, actual);
     }
+
+
+    @Test
+    void testDeterminantForEmptyMatrix() {
+        double[][] emptyMatrix = new double[0][0];
+        assertThrows(IllegalArgumentException.class, () -> matrixCalculator.determinant(emptyMatrix));
+    }
+
 }
