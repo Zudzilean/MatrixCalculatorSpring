@@ -38,8 +38,6 @@ public class MatrixController {
             // 确认计算方式后，验证矩阵B及其大小
             double[][] matrixB = MatrixOperationUtils.validateMatrixB(request);
 
-            // TODO 根据Operation获取到计算结果 策略模式
-
             return switch (request.getOperation()) {
                 case ADD, SUBTRACT, MULTIPLY ->
                     // 需要两个矩阵
