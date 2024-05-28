@@ -12,7 +12,7 @@ import static com.zudzilean.matrixspring.constant.MatrixConstant.*;
  * @since 2024/5/27
  */
 @Service
-public class MatrixStrategyImpl implements MatrixStrategy {
+public class MatrixStrategyV1Impl implements MatrixStrategy {
 
     private MatrixService calculatorV1 = new MatrixServiceImpl();
 
@@ -45,5 +45,5 @@ public class MatrixStrategyImpl implements MatrixStrategy {
         };
     }
 
-    // TODO:寻找另一种策略模式
+
 }

@@ -2,9 +2,10 @@ package com.zudzilean.matrixspring.controller;
 
 import com.zudzilean.matrixspring.domain.MatrixRequest;
 import com.zudzilean.matrixspring.strategy.MatrixStrategy;
-import com.zudzilean.matrixspring.strategy.MatrixStrategyImpl;
 import com.zudzilean.matrixspring.util.MatrixInputUtils;
 import com.zudzilean.matrixspring.util.MatrixOperationUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -21,7 +22,13 @@ import static com.zudzilean.matrixspring.constant.MatrixConstant.*;
 @RestController
 @RequestMapping("/api/matrix")
 public class MatrixController {
-    MatrixStrategy strategy = new MatrixStrategyImpl();
+
+    MatrixStrategy matrixStrategy;
+
+    @Autowired
+    public void setMatrixStrategy(@Qualifier(value = "matrixStrategyV2Impl") MatrixStrategy matrixStrategy) {
+        this.matrixStrategy = matrixStrategy;
+    }
 
     @PostMapping("/calculate")
     public ResponseEntity<?> calculateMatrix(@RequestBody MatrixRequest request) {
@@ -36,10 +43,10 @@ public class MatrixController {
             return switch (request.getOperation()) {
                 case ADD, SUBTRACT, MULTIPLY ->
                     // 需要两个矩阵
-                        ResponseEntity.ok(strategy.executeDoubleMatrixOperation(matrixA, matrixB,request.getOperation()));
+                        ResponseEntity.ok(matrixStrategy.executeDoubleMatrixOperation(matrixA, matrixB, request.getOperation()));
                 case SIMPLIFY, DETERMINANT, INVERSE, TRANSPOSE ->
                     // 只要一个矩阵
-                        ResponseEntity.ok(strategy.executeSingleMatrixOperation(matrixA,request.getOperation()));
+                        ResponseEntity.ok(matrixStrategy.executeSingleMatrixOperation(matrixA, request.getOperation()));
                 default -> throw new IllegalArgumentException("Unsupported operation: " + request.getOperation());
             };
 
