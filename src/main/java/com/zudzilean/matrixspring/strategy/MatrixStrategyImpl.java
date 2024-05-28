@@ -17,7 +17,7 @@ import static com.zudzilean.matrixspring.util.MatrixOperationUtils.convertMatrix
 @Service
 public class MatrixStrategyImpl implements MatrixStrategy {
 
-    private MatrixService calculatorV1;
+    private MatrixService calculatorV1 = new MatrixServiceImpl();
 
     @Autowired
     public void setCalculatorV1(MatrixService calculatorV1) {
