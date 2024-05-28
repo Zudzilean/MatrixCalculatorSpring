@@ -4,6 +4,7 @@ public class MatrixInputUtils {
 
     private static final int MAX_SIZE = 10;
     private static final long MAX_VALUE = 1000000;
+    private static final long MIN_VALUE = -1000000;
 
     /**
      * 验证给定的矩阵是否符合特定的尺寸和值范围要求。
@@ -55,11 +56,13 @@ public class MatrixInputUtils {
         // 检查矩阵中的值是否在允许的范围内
         for (double[] row : matrix) {
             for (double value : row) {
-                if (value < 0 || value > MAX_VALUE) {
+                if (value < MIN_VALUE || value > MAX_VALUE) {
                     throw new IllegalArgumentException("Value in matrix must be between 0 and " + MAX_VALUE + ".");
                 }
             }
         }
+
+
 
         // 如果所有检查都通过，则返回矩阵
         return matrix;
