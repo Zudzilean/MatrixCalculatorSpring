@@ -6,6 +6,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.zudzilean.matrixspring.constant.MatrixConstant.*;
+
 /**
  * @author
  * @since 2024/5/27
@@ -23,9 +25,9 @@ public class MatrixOperationUtils {
     public static double[][] validateMatrixB(MatrixRequest request) {
         String operation = request.getOperation();
         // 检查操作类型是否需要B
-        if ("add".equals(operation) ||
-                "subtract".equals(operation) ||
-                "multiply".equals(operation)) {
+        if (ADD.equals(operation) ||
+                SUBTRACT.equals(operation) ||
+                MULTIPLY.equals(operation)) {
             // 如果需要矩阵B，则验证并返回矩阵B
             return MatrixInputUtils.validateMatrix(request.getMatrixB(), request.getSizeB());
         } else {
@@ -34,7 +36,5 @@ public class MatrixOperationUtils {
         }
     }
 
-    public static List<List<Double>> convertMatrixToListOfLists(double[][] matrix) {
-        return Arrays.stream(matrix).map(row -> Arrays.stream(row).boxed().collect(Collectors.toList())).collect(Collectors.toList());
-    }
+
 }

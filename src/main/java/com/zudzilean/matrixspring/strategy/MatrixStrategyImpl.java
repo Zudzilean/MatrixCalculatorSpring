@@ -5,6 +5,8 @@ import com.zudzilean.matrixspring.service.MatrixServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import static com.zudzilean.matrixspring.constant.MatrixConstant.*;
+
 /**
  * @author
  * @since 2024/5/27
@@ -23,10 +25,10 @@ public class MatrixStrategyImpl implements MatrixStrategy {
     public double[][] executeSingleMatrixOperation(double[][] matrix, String operation) {
         //simplify", "determinant", "inverse", "transpose
         return switch (operation) {
-            case "simplify" -> calculatorV1.simplify(matrix);
-            case "determinant" -> calculatorV1.determinant(matrix);
-            case "inverse" -> calculatorV1.inverse(matrix);
-            case "transpose" -> calculatorV1.transpose(matrix);
+            case SIMPLIFY -> calculatorV1.simplify(matrix);
+            case DETERMINANT -> calculatorV1.determinant(matrix);
+            case INVERSE -> calculatorV1.inverse(matrix);
+            case TRANSPOSE -> calculatorV1.transpose(matrix);
             // 其他操作可以在这里添加
             default -> throw new IllegalStateException("Unexpected value: " + operation);
         };
@@ -35,9 +37,9 @@ public class MatrixStrategyImpl implements MatrixStrategy {
     public double[][] executeDoubleMatrixOperation(double[][] matrixA, double[][] matrixB, String operation) {
         // 根据operation调用不同的方法
         return switch (operation) {
-            case "add" -> calculatorV1.add(matrixA, matrixB);
-            case "subtract" -> calculatorV1.subtract(matrixA, matrixB);
-            case "multiply" -> calculatorV1.multiply(matrixA, matrixB);
+            case ADD -> calculatorV1.add(matrixA, matrixB);
+            case SUBTRACT -> calculatorV1.subtract(matrixA, matrixB);
+            case MULTIPLY -> calculatorV1.multiply(matrixA, matrixB);
             // 其他操作可以在这里添加
             default -> throw new IllegalStateException("Unexpected value: " + operation);
         };

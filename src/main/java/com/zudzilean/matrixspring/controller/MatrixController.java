@@ -12,8 +12,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import static com.zudzilean.matrixspring.constant.MatrixConstant.*;
 
-import static com.zudzilean.matrixspring.util.MatrixOperationUtils.*;
 
 /**
  *
@@ -34,10 +34,10 @@ public class MatrixController {
             // TODO 根据Operation获取到计算结果 策略模式
 
             return switch (request.getOperation()) {
-                case "add", "subtract", "multiply" ->
+                case ADD, SUBTRACT, MULTIPLY ->
                     // 需要两个矩阵
                         ResponseEntity.ok(strategy.executeDoubleMatrixOperation(matrixA, matrixB,request.getOperation()));
-                case "simplify", "determinant", "inverse", "transpose" ->
+                case SIMPLIFY, DETERMINANT, INVERSE, TRANSPOSE ->
                     // 只要一个矩阵
                         ResponseEntity.ok(strategy.executeSingleMatrixOperation(matrixA,request.getOperation()));
                 default -> throw new IllegalArgumentException("Unsupported operation: " + request.getOperation());
