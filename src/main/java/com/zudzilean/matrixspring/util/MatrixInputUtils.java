@@ -19,7 +19,7 @@ public class MatrixInputUtils {
      *                                 <li>矩阵为null。</li>
      *                                 <li>矩阵的实际尺寸与提供的size数组不匹配。</li>
      *                                 <li>矩阵的行长度不一致。</li>
-     *                                 <li>矩阵中的值不在0和{@value #MAX_VALUE}之间。</li>
+     *                                 <li>矩阵中的值不在MIN_VALUE和{@value #MAX_VALUE}之间。</li>
      *                                 <ul>
      */
     public static double[][] validateMatrix(double[][] matrix, int[] size) throws IllegalArgumentException {
